@@ -1,0 +1,602 @@
+#if C || CPP
+native
+{
+#include <string.h> // for memcpy
+
+typedef unsigned char u8;
+typedef unsigned short u16;
+typedef unsigned int u32;
+
+typedef struct CFLiAuthorID
+{
+    union
+    {
+        u8 data[8];
+        u16 value16[4];
+    };
+}
+CFLiAuthorID;
+
+typedef struct CFLCreateID
+{
+    union
+    {
+        u8 data[10];
+        u16 value16[5];
+    };
+}
+CFLCreateID;
+
+typedef struct __attribute__((__packed__)) CFLiMiiDataPacket // CFLiPackedMiiDataCore + CFLiPackedMiiDataOfficial + CRC
+{
+    u32 miiVersion : 8;
+    u32 copyable : 1;
+    u32 ngWord : 1;
+    u32 regionMove : 2;
+    u32 fontRegion : 2;
+    u32 reserved_0 : 2;
+    u32 roomIndex : 4;
+    u32 positionInRoom : 4;
+    u32 authorType : 4;
+    u32 birthPlatform : 3;
+    u32 reserved_1 : 1;
+    struct CFLiAuthorID authorID;
+    struct CFLCreateID createID;
+    u8 reserved_2[2];
+    u16 gender : 1;
+    u16 birthMonth : 4;
+    u16 birthDay : 5;
+    u16 favoriteColor : 4;
+    u16 favorite : 1;
+    u16 padding_0 : 1;
+    u16 name[10];
+    u8 height;
+    u8 build;
+    u16 localonly : 1;
+    u16 faceType : 4;
+    u16 faceColor : 3;
+    u16 faceTex : 4;
+    u16 faceMake : 4;
+    u16 hairType : 8;
+    u16 hairColor : 3;
+    u16 hairFlip : 1;
+    u16 padding_1 : 4;
+    u16 eyeType : 6;
+    u16 eyeColor : 3;
+    u16 eyeScale : 4;
+    u16 eyeAspect : 3;
+    u16 eyeRotate : 5;
+    u16 eyeX : 4;
+    u16 eyeY : 5;
+    u16 padding_2 : 2;
+    u16 eyebrowType : 5;
+    u16 eyebrowColor : 3;
+    u16 eyebrowScale : 4;
+    u16 eyebrowAspect : 3;
+    u16 padding_3 : 1;
+    u16 eyebrowRotate : 5;
+    u16 eyebrowX : 4;
+    u16 eyebrowY : 5;
+    u16 padding_4 : 2;
+    u16 noseType : 5;
+    u16 noseScale : 4;
+    u16 noseY : 5;
+    u16 padding_5 : 2;
+    u16 mouthType : 6;
+    u16 mouthColor : 3;
+    u16 mouthScale : 4;
+    u16 mouthAspect : 3;
+    u16 mouthY : 5;
+    u16 mustacheType : 3;
+    u16 padding_6 : 8;
+    u16 beardType : 3;
+    u16 beardColor : 3;
+    u16 beardScale : 4;
+    u16 beardY : 5;
+    u16 padding_7 : 1;
+    u16 glassType : 4;
+    u16 glassColor : 3;
+    u16 glassScale : 4;
+    u16 glassY : 5;
+    u16 moleType : 1;
+    u16 moleScale : 4;
+    u16 moleX : 5;
+    u16 moleY : 5;
+    // ^^ In CFLiPackedMiiDataOfficial, this is called "coredata"
+    u16 padding_8 : 1;
+    u16 creatorName[10];
+    // ^^ In CFLiMiiDataPacket, this is called "rawdata"
+    u16 padding_9;
+    u16 crc;
+}
+CFLiMiiDataPacket;
+}
+#endif
+
+public class CharInfoVer3
+{
+    int miiVersion;
+
+    int faceType;
+    int faceColor;
+    int faceTex;
+    int faceMake;
+
+    int hairType;
+    int hairColor;
+    int hairFlip;
+
+    int eyeType;
+    int eyeColor;
+    int eyeScale;
+    int eyeAspect;
+    int eyeRotate;
+    int eyeX;
+    int eyeY;
+
+    int eyebrowType;
+    int eyebrowColor;
+    int eyebrowScale;
+    int eyebrowAspect;
+    int eyebrowRotate;
+    int eyebrowX;
+    int eyebrowY;
+
+    int noseType;
+    int noseScale;
+    int noseY;
+
+    int mouthType;
+    int mouthColor;
+    int mouthScale;
+    int mouthAspect;
+    int mouthY;
+
+    int mustacheType;
+    int beardType;
+    int beardColor;
+    int beardScale;
+    int beardY;
+
+    int glassType;
+    int glassColor;
+    int glassScale;
+    int glassY;
+
+    int moleType;
+    int moleScale;
+    int moleX;
+    int moleY;
+
+    int height;
+    int build;
+
+    ushort[11] name;
+    ushort[11] creatorName;
+    int gender;
+    int birthMonth;
+    int birthDay;
+    int favoriteColor;
+    bool favorite;
+    bool copyable;
+    bool ngWord;
+    bool localonly;
+    int regionMove;
+    int fontRegion;
+    int roomIndex;
+    int positionInRoom;
+    int birthPlatform;
+
+    byte[10] createID;
+    int authorType;
+    //ushort padding_0;
+    byte[8] authorID;
+
+    /// Prints the contents of the Mii.
+    public void DumpInfo()
+    {
+        Console.WriteLine("Faceline:");
+        Console.WriteLine($"  Type   = {faceType}");
+        Console.WriteLine($"  Color  = {faceColor}");
+        Console.WriteLine($"  Tex    = {faceTex}");
+        Console.WriteLine($"  Make   = {faceMake}");
+        Console.WriteLine();
+
+        Console.WriteLine("Hair:");
+        Console.WriteLine($"  Type   = {hairType}");
+        Console.WriteLine($"  Color  = {hairColor}");
+        Console.WriteLine($"  Flip   = {hairFlip}");
+        Console.WriteLine();
+
+        Console.WriteLine("Eye:");
+        Console.WriteLine($"  Type   = {eyeType}");
+        Console.WriteLine($"  Color  = {eyeColor}");
+        Console.WriteLine($"  Scale  = {eyeScale}");
+        Console.WriteLine($"  Aspect = {eyeAspect}");
+        Console.WriteLine($"  Rotate = {eyeRotate}");
+        Console.WriteLine($"  X      = {eyeX}");
+        Console.WriteLine($"  Y      = {eyeY}");
+        Console.WriteLine();
+
+        Console.WriteLine("Eyebrow:");
+        Console.WriteLine($"  Type   = {eyebrowType}");
+        Console.WriteLine($"  Color  = {eyebrowColor}");
+        Console.WriteLine($"  Scale  = {eyebrowScale}");
+        Console.WriteLine($"  Aspect = {eyebrowAspect}");
+        Console.WriteLine($"  Rotate = {eyebrowRotate}");
+        Console.WriteLine($"  X      = {eyebrowX}");
+        Console.WriteLine($"  Y      = {eyebrowY}");
+        Console.WriteLine();
+
+        Console.WriteLine("Nose:");
+        Console.WriteLine($"  Type  = {noseType}");
+        Console.WriteLine($"  Scale = {noseScale}");
+        Console.WriteLine($"  Y     = {noseY}");
+        Console.WriteLine();
+
+        Console.WriteLine("Mouth:");
+        Console.WriteLine($"  Type   = {mouthType}");
+        Console.WriteLine($"  Color  = {mouthColor}");
+        Console.WriteLine($"  Scale  = {mouthScale}");
+        Console.WriteLine($"  Aspect = {mouthAspect}");
+        Console.WriteLine($"  Y      = {mouthY}");
+        Console.WriteLine();
+
+        Console.WriteLine("Beard:");
+        Console.WriteLine($"  Mustache = {mustacheType}");
+        Console.WriteLine($"  Type     = {beardType}");
+        Console.WriteLine($"  Color    = {beardColor}");
+        Console.WriteLine($"  Scale    = {beardScale}");
+        Console.WriteLine($"  Y        = {beardY}");
+        Console.WriteLine();
+
+        Console.WriteLine("Glasses:");
+        Console.WriteLine($"  Type  = {glassType}");
+        Console.WriteLine($"  Color = {glassColor}");
+        Console.WriteLine($"  Scale = {glassScale}");
+        Console.WriteLine($"  Y     = {glassY}");
+        Console.WriteLine();
+
+        Console.WriteLine("Mole:");
+        Console.WriteLine($"  Type  = {moleType}");
+        Console.WriteLine($"  Scale = {moleScale}");
+        Console.WriteLine($"  X     = {moleX}");
+        Console.WriteLine($"  Y     = {moleY}");
+        Console.WriteLine();
+
+        Console.WriteLine("Body:");
+        Console.WriteLine($"  Height = {height}");
+        Console.WriteLine($"  Build  = {build}");
+        Console.WriteLine();
+
+        Console.WriteLine($"Gender         = {gender}");
+        Console.WriteLine($"Birthday       = {birthMonth}/{birthDay}");
+        Console.WriteLine($"FavoriteColor  = {favoriteColor}");
+        Console.WriteLine($"Favorite       = {favorite ? "true" : "false"}");
+        Console.WriteLine($"Copyable       = {copyable? "true" : "false"}");
+        Console.WriteLine($"NG Word        = {ngWord? "true" : "false"}");
+        Console.WriteLine($"Local Only     = {localonly? "true" : "false"}");
+        Console.WriteLine();
+
+        Console.WriteLine($"Region Move    = {regionMove}");
+        Console.WriteLine($"Font Region    = {fontRegion}");
+        Console.WriteLine($"Room Index     = {roomIndex}");
+        Console.WriteLine($"Room Position  = {positionInRoom}");
+        Console.WriteLine($"Birth Platform = {birthPlatform}");
+        Console.WriteLine();
+
+        Console.WriteLine("Create ID:");
+        for (int i = 0; i < createID.Length; i++)
+            Console.Write($"{createID[i]:X2} ");
+        Console.WriteLine();
+
+        //Console.WriteLine($"Padding        = 0x{padding_0:X4}");
+        Console.WriteLine($"Author Type    = {authorType}");
+
+        Console.WriteLine("Author ID:");
+        for (int i = 0; i < authorID.Length; i++)
+            Console.Write($"{authorID[i]:X2} ");
+        Console.WriteLine();
+
+        Console.WriteLine("Name (UTF-16):");
+        foreach (byte ch in name)
+            Console.Write($"{ch}");
+        Console.WriteLine();
+
+        Console.WriteLine("Creator Name (UTF-16):");
+        foreach (byte ch in creatorName)
+            Console.Write($"{ch}");
+        Console.WriteLine();
+    }
+
+    /// Constructs a new CharInfoVer3 from StoreData.
+#if C || CPP
+    /// You must free the output CharInfoVer3 instance.
+#endif
+    public static CharInfoVer3 FromStoreData(
+        /// The source Ver3StoreData.
+        byte[] src) {
+        CharInfoVer3# pDst = new CharInfoVer3();
+#if C || CPP
+        native
+        {
+            const CFLiMiiDataPacket* pSrc = (CFLiMiiDataPacket*)src;
+
+            // Header fields
+            pDst->miiVersion = pSrc->miiVersion;
+            pDst->copyable = pSrc->copyable;
+            pDst->ngWord = pSrc->ngWord;
+            pDst->regionMove = pSrc->regionMove;
+            pDst->fontRegion = pSrc->fontRegion;
+            pDst->roomIndex = pSrc->roomIndex;
+            pDst->positionInRoom = pSrc->positionInRoom;
+            pDst->authorType = pSrc->authorType;
+            pDst->birthPlatform = pSrc->birthPlatform;
+
+            // Author and Create IDs
+            memcpy(pDst->authorID, pSrc->authorID.data, sizeof(pDst->authorID));
+            memcpy(pDst->createID, pSrc->createID.data, sizeof(pDst->createID));
+
+            // Identity info
+            pDst->gender = pSrc->gender;
+            pDst->birthMonth = pSrc->birthMonth;
+            pDst->birthDay = pSrc->birthDay;
+            pDst->favoriteColor = pSrc->favoriteColor;
+            pDst->favorite = pSrc->favorite;
+
+            // Name & Creator
+            memcpy(pDst->name, pSrc->name, 20);
+            pDst->name[10] = 0;
+            memcpy(pDst->creatorName, pSrc->creatorName, 20);
+            pDst->creatorName[10] = 0;
+
+            // Physical attributes
+            pDst->height = pSrc->height;
+            pDst->build = pSrc->build;
+            pDst->localonly = pSrc->localonly;
+
+            // Face
+            pDst->faceType = pSrc->faceType;
+            pDst->faceColor = pSrc->faceColor;
+            pDst->faceTex = pSrc->faceTex;
+            pDst->faceMake = pSrc->faceMake;
+
+            // Hair
+            pDst->hairType = pSrc->hairType;
+            pDst->hairColor = pSrc->hairColor;
+            pDst->hairFlip = pSrc->hairFlip;
+
+            // Eyes
+            pDst->eyeType = pSrc->eyeType;
+            pDst->eyeColor = pSrc->eyeColor;
+            pDst->eyeScale = pSrc->eyeScale;
+            pDst->eyeAspect = pSrc->eyeAspect;
+            pDst->eyeRotate = pSrc->eyeRotate;
+            pDst->eyeX = pSrc->eyeX;
+            pDst->eyeY = pSrc->eyeY;
+
+            // Eyebrows
+            pDst->eyebrowType = pSrc->eyebrowType;
+            pDst->eyebrowColor = pSrc->eyebrowColor;
+            pDst->eyebrowScale = pSrc->eyebrowScale;
+            pDst->eyebrowAspect = pSrc->eyebrowAspect;
+            pDst->eyebrowRotate = pSrc->eyebrowRotate;
+            pDst->eyebrowX = pSrc->eyebrowX;
+            pDst->eyebrowY = pSrc->eyebrowY;
+
+            // Nose
+            pDst->noseType = pSrc->noseType;
+            pDst->noseScale = pSrc->noseScale;
+            pDst->noseY = pSrc->noseY;
+
+            // Mouth
+            pDst->mouthType = pSrc->mouthType;
+            pDst->mouthColor = pSrc->mouthColor;
+            pDst->mouthScale = pSrc->mouthScale;
+            pDst->mouthAspect = pSrc->mouthAspect;
+            pDst->mouthY = pSrc->mouthY;
+
+            // Facial Hair
+            pDst->mustacheType = pSrc->mustacheType;
+            pDst->beardType = pSrc->beardType;
+            pDst->beardColor = pSrc->beardColor;
+            pDst->beardScale = pSrc->beardScale;
+            pDst->beardY = pSrc->beardY;
+
+            // Glasses
+            pDst->glassType = pSrc->glassType;
+            pDst->glassColor = pSrc->glassColor;
+            pDst->glassScale = pSrc->glassScale;
+            pDst->glassY = pSrc->glassY;
+
+            // Mole
+            pDst->moleType = pSrc->moleType;
+            pDst->moleScale = pSrc->moleScale;
+            pDst->moleX = pSrc->moleX;
+            pDst->moleY = pSrc->moleY;
+        }
+#else
+        //Console.WriteLine("CharInfoVer3::FromStoreData: not implemented :(");
+        pDst.miiVersion = src[0];
+        pDst.copyable = (src[1] & 1) == 1;
+        pDst.ngWord = (src[1] >> 1 & 1) == 1;
+        pDst.regionMove = (src[1] >> 2 & 3);
+        pDst.fontRegion = (src[1] >> 4 & 3);
+        pDst.roomIndex = (src[2] & 0xf);
+        pDst.positionInRoom = (src[2] >> 4);
+        pDst.authorType = (src[3] & 0xf);
+        pDst.birthPlatform = (src[3] >> 4 & 7);
+        //memcpy(pDst.authorId,src + 4,8);
+        //memcpy(pDst.createId,src + 0xc,10);
+        pDst.gender = (src[0x18] & 1);
+        pDst.birthMonth = (src[0x18] >> 1 & 0xf);
+        pDst.birthDay = (src[0x19] & 3) << 3 | (src[0x18] >> 5);
+        pDst.favoriteColor = (src[0x19] >> 2 & 0xf);
+        pDst.favorite = (src[0x19] >> 6 & 1) == 1;
+        //memcpy(pDst.name,src + 0x1a,0x14);
+        pDst.name[10] = 0;
+        //memcpy(pDst.creatorName,src + 0x48,0x14);
+        pDst.creatorName[10] = 0;
+        pDst.height = src[0x2e];
+        pDst.build = src[0x2f];
+        pDst.localonly = (src[0x30] & 1) == 1;
+        pDst.faceType = (src[0x30] >> 1 & 0xf);
+        pDst.faceColor = (src[0x30] >> 5);
+        pDst.faceTex = (src[0x31] & 0xf);
+        pDst.faceMake = (src[0x31] >> 4);
+        pDst.hairType = src[0x32];
+        pDst.hairColor = (src[0x33] & 7);
+        pDst.hairFlip = (src[0x33] >> 3 & 1);
+        pDst.eyeType = (src[0x34] & 0x3f);
+        pDst.eyeColor = (src[0x35] & 1) << 2 | (src[0x34] >> 6);
+        pDst.eyeScale = (src[0x35] >> 1 & 0xf);
+        pDst.eyeAspect = (src[0x35] >> 5);
+        pDst.eyeRotate = (src[0x36] & 0x1f);
+        pDst.eyeX = (src[0x37] & 1) << 3 | (src[0x36] >> 5);
+        pDst.eyeY = (src[0x37] >> 1 & 0x1f);
+        pDst.eyebrowType = (src[0x38] & 0x1f);
+        pDst.eyebrowColor = (src[0x38] >> 5);
+        pDst.eyebrowScale = (src[0x39] & 0xf);
+        pDst.eyebrowAspect = (src[0x39] >> 4 & 7);
+        pDst.eyebrowRotate = (src[0x3a] & 0x1f);
+        pDst.eyebrowX = (src[0x3b] & 1) << 3 | (src[0x3a] >> 5);
+        pDst.eyebrowY = (src[0x3b] >> 1 & 0x1f);
+        pDst.noseType = (src[0x3c] & 0x1f);
+        pDst.noseScale = (src[0x3d] & 1) << 3 | (src[0x3c] >> 5);
+        pDst.noseY = (src[0x3d] >> 1 & 0x1f);
+        pDst.mouthType = (src[0x3e] & 0x3f);
+        pDst.mouthColor = (src[0x3f] & 1) << 2 | (src[0x3e] >> 6);
+        pDst.mouthScale = (src[0x3f] >> 1 & 0xf);
+        pDst.mouthAspect = (src[0x3f] >> 5);
+        pDst.mouthY = (src[0x40] & 0x1f);
+        pDst.mustacheType = (src[0x40] >> 5);
+        pDst.beardType = (src[0x42] & 7);
+        pDst.beardColor = (src[0x42] >> 3 & 7);
+        pDst.beardScale = (src[0x43] & 3) << 2 | (src[0x42] >> 6);
+        pDst.beardY = (src[0x43] >> 2 & 0x1f);
+        pDst.glassType = (src[0x44] & 0xf);
+        pDst.glassColor = (src[0x44] >> 4 & 7);
+        pDst.glassScale = (src[0x45] & 7) * 2 | (src[0x44] >> 7);
+        pDst.glassY = (src[0x45] >> 3);
+        pDst.moleType = (src[0x46] & 1);
+        pDst.moleScale = (src[0x46] >> 1 & 0xf);
+        pDst.moleX = (src[0x47] & 3) << 3 | (src[0x46] >> 5);
+        pDst.moleY = (src[0x47] >> 2 & 0x1f);
+#endif
+        return pDst;
+    }
+
+    public void ToStoreData() {
+#if C || CPP
+        native
+        {
+            CFLiMiiDataPacket dst;
+
+            // Header fields
+            dst.miiVersion = self->miiVersion;
+            dst.copyable = self->copyable;
+            dst.ngWord = self->ngWord;
+            dst.regionMove = self->regionMove;
+            dst.fontRegion = self->fontRegion;
+            dst.roomIndex = self->roomIndex;
+            dst.positionInRoom = self->positionInRoom;
+            dst.authorType = self->authorType;
+            dst.birthPlatform = self->birthPlatform;
+
+            // Author and Create IDs
+            memcpy(&dst.authorID, self->authorID, sizeof(dst.authorID));
+            memcpy(&dst.createID, self->createID, sizeof(dst.createID));
+
+            // Identity info
+            dst.gender = self->gender;
+            dst.birthMonth = self->birthMonth;
+            dst.birthDay = self->birthDay;
+            dst.favoriteColor = self->favoriteColor;
+            dst.favorite = self->favorite;
+
+            // Name & Creator
+            memcpy(dst.name, self->name, 20);
+            memcpy(dst.creatorName, self->creatorName, 20);
+
+            // Physical attributes
+            dst.height = self->height;
+            dst.build = self->build;
+            dst.localonly = self->localonly;
+
+            // Face
+            dst.faceType = self->faceType;
+            dst.faceColor = self->faceColor;
+            dst.faceTex = self->faceTex;
+            dst.faceMake = self->faceMake;
+
+            // Hair
+            dst.hairType = self->hairType;
+            dst.hairColor = self->hairColor;
+            dst.hairFlip = self->hairFlip;
+
+            // Eyes
+            dst.eyeType = self->eyeType;
+            dst.eyeColor = self->eyeColor;
+            dst.eyeScale = self->eyeScale;
+            dst.eyeAspect = self->eyeAspect;
+            dst.eyeRotate = self->eyeRotate;
+            dst.eyeX = self->eyeX;
+            dst.eyeY = self->eyeY;
+
+            // Eyebrows
+            dst.eyebrowType = self->eyebrowType;
+            dst.eyebrowColor = self->eyebrowColor;
+            dst.eyebrowScale = self->eyebrowScale;
+            dst.eyebrowAspect = self->eyebrowAspect;
+            dst.eyebrowRotate = self->eyebrowRotate;
+            dst.eyebrowX = self->eyebrowX;
+            dst.eyebrowY = self->eyebrowY;
+
+            // Nose
+            dst.noseType = self->noseType;
+            dst.noseScale = self->noseScale;
+            dst.noseY = self->noseY;
+
+            // Mouth
+            dst.mouthType = self->mouthType;
+            dst.mouthColor = self->mouthColor;
+            dst.mouthScale = self->mouthScale;
+            dst.mouthAspect = self->mouthAspect;
+            dst.mouthY = self->mouthY;
+
+            // Facial Hair
+            dst.mustacheType = self->mustacheType;
+            dst.beardType = self->beardType;
+            dst.beardColor = self->beardColor;
+            dst.beardScale = self->beardScale;
+            dst.beardY = self->beardY;
+
+            // Glasses
+            dst.glassType = self->glassType;
+            dst.glassColor = self->glassColor;
+            dst.glassScale = self->glassScale;
+            dst.glassY = self->glassY;
+
+            // Mole
+            dst.moleType = self->moleType;
+            dst.moleScale = self->moleScale;
+            dst.moleX = self->moleX;
+            dst.moleY = self->moleY;
+
+        }
+#else
+
+#endif
+    }
+}
+
+public class Hello
+{
+    public static void Main()
+    {
+        byte[] bCharInfo = resource<byte[]>("jasmine.ffsd");
+        CharInfoVer3 info = CharInfoVer3.FromStoreData(bCharInfo);
+        info.DumpInfo();
+        // NOTE: info is NOT freed
+    }
+}
