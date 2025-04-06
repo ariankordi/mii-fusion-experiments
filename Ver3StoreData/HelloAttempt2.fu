@@ -1,0 +1,1496 @@
+
+/// CharInfo for CFL/FFL, representing fields of Ver3StoreData.
+public class Ver3CharInfo
+{
+    int MiiVersion;
+
+    int FaceType;
+    int FaceColor;
+    int FaceTex;
+    int FaceMake;
+
+    int HairType;
+    int HairColor;
+    int HairFlip;
+
+    int EyeType;
+    int EyeColor;
+    int EyeScale;
+    int EyeAspect;
+    int EyeRotate;
+    int EyeX;
+    int EyeY;
+
+    int EyebrowType;
+    int EyebrowColor;
+    int EyebrowScale;
+    int EyebrowAspect;
+    int EyebrowRotate;
+    int EyebrowX;
+    int EyebrowY;
+
+    int NoseType;
+    int NoseScale;
+    int NoseY;
+
+    int MouthType;
+    int MouthColor;
+    int MouthScale;
+    int MouthAspect;
+    int MouthY;
+
+    int MustacheType;
+    int BeardType;
+    int BeardColor;
+    int BeardScale;
+    int BeardY;
+
+    int GlassType;
+    int GlassColor;
+    int GlassScale;
+    int GlassY;
+
+    int MoleType;
+    int MoleScale;
+    int MoleX;
+    int MoleY;
+
+    int Height;
+    int Build;
+
+    ushort[11] Name;
+    ushort[11] CreatorName;
+
+    int Gender;
+    int BirthMonth;
+    int BirthDay;
+    int FavoriteColor;
+    bool Favorite;
+    bool Copyable;
+    bool NgWord;
+    bool Localonly;
+    int RegionMove;
+    int FontRegion;
+    int RoomIndex;
+    int PositionInRoom;
+    int BirthPlatform;
+
+    byte[10] CreateId;
+    int AuthorType;
+    // ushort Padding0;
+    byte[8] AuthorId;
+
+    // Getters and setters for each field.
+
+    public int GetMiiVersion() => MiiVersion;
+    public void SetMiiVersion!(int value) { MiiVersion = value; }
+
+    public int GetFaceType() => FaceType;
+    public void SetFaceType!(int value) { FaceType = value; }
+
+    public int GetFaceColor() => FaceColor;
+    public void SetFaceColor!(int value) { FaceColor = value; }
+
+    public int GetFaceTex() => FaceTex;
+    public void SetFaceTex!(int value) { FaceTex = value; }
+
+    public int GetFaceMake() => FaceMake;
+    public void SetFaceMake!(int value) { FaceMake = value; }
+
+    public int GetHairType() => HairType;
+    public void SetHairType!(int value) { HairType = value; }
+
+    public int GetHairColor() => HairColor;
+    public void SetHairColor!(int value) { HairColor = value; }
+
+    public int GetHairFlip() => HairFlip;
+    public void SetHairFlip!(int value) { HairFlip = value; }
+
+    public int GetEyeType() => EyeType;
+    public void SetEyeType!(int value) { EyeType = value; }
+
+    public int GetEyeColor() => EyeColor;
+    public void SetEyeColor!(int value) { EyeColor = value; }
+
+    public int GetEyeScale() => EyeScale;
+    public void SetEyeScale!(int value) { EyeScale = value; }
+
+    public int GetEyeAspect() => EyeAspect;
+    public void SetEyeAspect!(int value) { EyeAspect = value; }
+
+    public int GetEyeRotate() => EyeRotate;
+    public void SetEyeRotate!(int value) { EyeRotate = value; }
+
+    public int GetEyeX() => EyeX;
+    public void SetEyeX!(int value) { EyeX = value; }
+
+    public int GetEyeY() => EyeY;
+    public void SetEyeY!(int value) { EyeY = value; }
+
+    public int GetEyebrowType() => EyebrowType;
+    public void SetEyebrowType!(int value) { EyebrowType = value; }
+
+    public int GetEyebrowColor() => EyebrowColor;
+    public void SetEyebrowColor!(int value) { EyebrowColor = value; }
+
+    public int GetEyebrowScale() => EyebrowScale;
+    public void SetEyebrowScale!(int value) { EyebrowScale = value; }
+
+    public int GetEyebrowAspect() => EyebrowAspect;
+    public void SetEyebrowAspect!(int value) { EyebrowAspect = value; }
+
+    public int GetEyebrowRotate() => EyebrowRotate;
+    public void SetEyebrowRotate!(int value) { EyebrowRotate = value; }
+
+    public int GetEyebrowX() => EyebrowX;
+    public void SetEyebrowX!(int value) { EyebrowX = value; }
+
+    public int GetEyebrowY() => EyebrowY;
+    public void SetEyebrowY!(int value) { EyebrowY = value; }
+
+    public int GetNoseType() => NoseType;
+    public void SetNoseType!(int value) { NoseType = value; }
+
+    public int GetNoseScale() => NoseScale;
+    public void SetNoseScale!(int value) { NoseScale = value; }
+
+    public int GetNoseY() => NoseY;
+    public void SetNoseY!(int value) { NoseY = value; }
+
+    public int GetMouthType() => MouthType;
+    public void SetMouthType!(int value) { MouthType = value; }
+
+    public int GetMouthColor() => MouthColor;
+    public void SetMouthColor!(int value) { MouthColor = value; }
+
+    public int GetMouthScale() => MouthScale;
+    public void SetMouthScale!(int value) { MouthScale = value; }
+
+    public int GetMouthAspect() => MouthAspect;
+    public void SetMouthAspect!(int value) { MouthAspect = value; }
+
+    public int GetMouthY() => MouthY;
+    public void SetMouthY!(int value) { MouthY = value; }
+
+    public int GetMustacheType() => MustacheType;
+    public void SetMustacheType!(int value) { MustacheType = value; }
+
+    public int GetBeardType() => BeardType;
+    public void SetBeardType!(int value) { BeardType = value; }
+
+    public int GetBeardColor() => BeardColor;
+    public void SetBeardColor!(int value) { BeardColor = value; }
+
+    public int GetBeardScale() => BeardScale;
+    public void SetBeardScale!(int value) { BeardScale = value; }
+
+    public int GetBeardY() => BeardY;
+    public void SetBeardY!(int value) { BeardY = value; }
+
+    public int GetGlassType() => GlassType;
+    public void SetGlassType!(int value) { GlassType = value; }
+
+    public int GetGlassColor() => GlassColor;
+    public void SetGlassColor!(int value) { GlassColor = value; }
+
+    public int GetGlassScale() => GlassScale;
+    public void SetGlassScale!(int value) { GlassScale = value; }
+
+    public int GetGlassY() => GlassY;
+    public void SetGlassY!(int value) { GlassY = value; }
+
+    public int GetMoleType() => MoleType;
+    public void SetMoleType!(int value) { MoleType = value; }
+
+    public int GetMoleScale() => MoleScale;
+    public void SetMoleScale!(int value) { MoleScale = value; }
+
+    public int GetMoleX() => MoleX;
+    public void SetMoleX!(int value) { MoleX = value; }
+
+    public int GetMoleY() => MoleY;
+    public void SetMoleY!(int value) { MoleY = value; }
+
+    public int GetHeight() => Height;
+    public void SetHeight!(int value) { Height = value; }
+
+    public int GetBuild() => Build;
+    public void SetBuild!(int value) { Build = value; }
+
+    public ushort[] GetName() => Name;
+    public void SetName!(ushort[] value)
+    {
+        for (int i = 0; i < 10; i++)
+            Name[i] = value[i];
+        // Always null-terminate the string.
+        Name[10] = 0;
+    }
+
+    public ushort[] GetCreatorName() => CreatorName;
+    public void SetCreatorName!(ushort[] value)
+        {
+        for (int i = 0; i < 10; i++)
+            CreatorName[i] = value[i];
+        CreatorName[10] = 0;
+    }
+
+    public int GetGender() => Gender;
+    public void SetGender!(int value) { Gender = value; }
+
+    public int GetBirthMonth() => BirthMonth;
+    public void SetBirthMonth!(int value) { BirthMonth = value; }
+
+    public int GetBirthDay() => BirthDay;
+    public void SetBirthDay!(int value) { BirthDay = value; }
+
+    public int GetFavoriteColor() => FavoriteColor;
+    public void SetFavoriteColor!(int value) { FavoriteColor = value; }
+
+    public bool GetFavorite() => Favorite;
+    public void SetFavorite!(int value) { Favorite = (value != 0); }
+
+    public bool GetCopyable() => Copyable;
+    public void SetCopyable!(int value) { Copyable = (value != 0); }
+
+    public bool GetNgWord() => NgWord;
+    public void SetNgWord!(int value) { NgWord = (value != 0); }
+
+    public bool GetLocalonly() => Localonly;
+    public void SetLocalonly!(int value) { Localonly = (value != 0); }
+
+    public int GetRegionMove() => RegionMove;
+    public void SetRegionMove!(int value) { RegionMove = value; }
+
+    public int GetFontRegion() => FontRegion;
+    public void SetFontRegion!(int value) { FontRegion = value; }
+
+    public int GetRoomIndex() => RoomIndex;
+    public void SetRoomIndex!(int value) { RoomIndex = value; }
+
+    public int GetPositionInRoom() => PositionInRoom;
+    public void SetPositionInRoom!(int value) { PositionInRoom = value; }
+
+    public int GetBirthPlatform() => BirthPlatform;
+    public void SetBirthPlatform!(int value) { BirthPlatform = value; }
+
+    public byte[] GetCreateId() => CreateId;
+    public void SetCreateId!(byte[] value, int offset = 0)
+    {
+        value.CopyTo(offset, CreateId, 0, CreateId.Length);
+    }
+
+    public int GetAuthorType() => AuthorType;
+    public void SetAuthorType!(int value) { AuthorType = value; }
+
+    public byte[] GetAuthorId() => AuthorId;
+    public void SetAuthorId!(byte[] value, int offset = 0)
+    {
+        value.CopyTo(offset, AuthorId, 0, AuthorId.Length);
+    }
+
+    public void IsValid()
+    {
+        if (MiiVersion <= 0)
+            Console.WriteLine("Invalid: MiiVersion must be > 0");
+        // TODO: Additional validation checks can be added here.
+    }
+
+    public void Dump()
+    {
+        Console.WriteLine("Faceline:");
+        Console.WriteLine($"  Type   = {FaceType}");
+        Console.WriteLine($"  Color  = {FaceColor}");
+        Console.WriteLine($"  Tex    = {FaceTex}");
+        Console.WriteLine($"  Make   = {FaceMake}");
+        Console.WriteLine();
+
+        Console.WriteLine("Hair:");
+        Console.WriteLine($"  Type   = {HairType}");
+        Console.WriteLine($"  Color  = {HairColor}");
+        Console.WriteLine($"  Flip   = {HairFlip}");
+        Console.WriteLine();
+
+        Console.WriteLine("Eye:");
+        Console.WriteLine($"  Type   = {EyeType}");
+        Console.WriteLine($"  Color  = {EyeColor}");
+        Console.WriteLine($"  Scale  = {EyeScale}");
+        Console.WriteLine($"  Aspect = {EyeAspect}");
+        Console.WriteLine($"  Rotate = {EyeRotate}");
+        Console.WriteLine($"  X      = {EyeX}");
+        Console.WriteLine($"  Y      = {EyeY}");
+        Console.WriteLine();
+
+        Console.WriteLine("Eyebrow:");
+        Console.WriteLine($"  Type   = {EyebrowType}");
+        Console.WriteLine($"  Color  = {EyebrowColor}");
+        Console.WriteLine($"  Scale  = {EyebrowScale}");
+        Console.WriteLine($"  Aspect = {EyebrowAspect}");
+        Console.WriteLine($"  Rotate = {EyebrowRotate}");
+        Console.WriteLine($"  X      = {EyebrowX}");
+        Console.WriteLine($"  Y      = {EyebrowY}");
+        Console.WriteLine();
+
+        Console.WriteLine("Nose:");
+        Console.WriteLine($"  Type  = {NoseType}");
+        Console.WriteLine($"  Scale = {NoseScale}");
+        Console.WriteLine($"  Y     = {NoseY}");
+        Console.WriteLine();
+
+        Console.WriteLine("Mouth:");
+        Console.WriteLine($"  Type   = {MouthType}");
+        Console.WriteLine($"  Color  = {MouthColor}");
+        Console.WriteLine($"  Scale  = {MouthScale}");
+        Console.WriteLine($"  Aspect = {MouthAspect}");
+        Console.WriteLine($"  Y      = {MouthY}");
+        Console.WriteLine();
+
+        Console.WriteLine("Beard:");
+        Console.WriteLine($"  Mustache = {MustacheType}");
+        Console.WriteLine($"  Type     = {BeardType}");
+        Console.WriteLine($"  Color    = {BeardColor}");
+        Console.WriteLine($"  Scale    = {BeardScale}");
+        Console.WriteLine($"  Y        = {BeardY}");
+        Console.WriteLine();
+
+        Console.WriteLine("Glasses:");
+        Console.WriteLine($"  Type  = {GlassType}");
+        Console.WriteLine($"  Color = {GlassColor}");
+        Console.WriteLine($"  Scale = {GlassScale}");
+        Console.WriteLine($"  Y     = {GlassY}");
+        Console.WriteLine();
+
+        Console.WriteLine("Mole:");
+        Console.WriteLine($"  Type  = {MoleType}");
+        Console.WriteLine($"  Scale = {MoleScale}");
+        Console.WriteLine($"  X     = {MoleX}");
+        Console.WriteLine($"  Y     = {MoleY}");
+        Console.WriteLine();
+
+        Console.WriteLine("Body:");
+        Console.WriteLine($"  Height = {Height}");
+        Console.WriteLine($"  Build  = {Build}");
+        Console.WriteLine();
+
+        Console.WriteLine($"Gender         = {Gender}");
+        Console.WriteLine($"Birthday       = {BirthMonth}/{BirthDay}");
+        Console.WriteLine($"FavoriteColor  = {FavoriteColor}");
+        Console.WriteLine($"Favorite       = {Favorite ? "true" : "false"}");
+        Console.WriteLine($"Copyable       = {Copyable ? "true" : "false"}");
+        Console.WriteLine($"NG Word        = {NgWord ? "true" : "false"}");
+        Console.WriteLine($"Local Only     = {Localonly ? "true" : "false"}");
+        Console.WriteLine();
+
+        Console.WriteLine($"Region Move    = {RegionMove}");
+        Console.WriteLine($"Font Region    = {FontRegion}");
+        Console.WriteLine($"Room Index     = {RoomIndex}");
+        Console.WriteLine($"Room Position  = {PositionInRoom}");
+        Console.WriteLine($"Birth Platform = {BirthPlatform}");
+        Console.WriteLine();
+
+        Console.WriteLine("Create ID:");
+        string() createIdHex = "";
+        string() tmp = "";
+        for (int i = 0; i < CreateId.Length; i++)
+        {
+            tmp = $"{CreateId[i]:X2} ";
+            createIdHex += tmp;
+        }
+        Console.WriteLine(createIdHex);
+
+        Console.WriteLine($"Author Type    = {AuthorType}");
+
+        Console.WriteLine("Author ID:");
+        string() authorIdHex = "";
+        for (int i = 0; i < AuthorId.Length; i++)
+        {
+            tmp = $"{AuthorId[i]:X2} ";
+            authorIdHex += tmp;
+        }
+        Console.WriteLine(authorIdHex);
+
+        Console.WriteLine("Name (UTF-16):");
+        string() nameText = "";
+        for (int i = 0; i < Name.Length; i++)
+        {
+            tmp = $"{Name[i]:X4} ";
+            nameText += tmp;
+        }
+        Console.WriteLine(nameText);
+
+        Console.WriteLine("Creator Name (UTF-16):");
+        string() creatorText = "";
+        for (int i = 0; i < CreatorName.Length; i++)
+        {
+            tmp = $"{CreatorName[i]:X4} ";
+            creatorText += tmp;
+        }
+        Console.WriteLine(creatorText);
+
+
+    }
+
+}
+
+public class Ver3StoreData
+{
+    public const int Length = 96;
+
+#if !NO_DATA_ACCESSORS
+    // Private fields corresponding to the C struct layout.
+    // BitField0 (32 bits)
+    int BitField0;
+    // AuthorId: 8 bytes
+    byte[8] AuthorId;
+    // CreateId: 10 bytes
+    byte[10] CreateId;
+    // Reserved2: 2 bytes
+    byte[2] Reserved2;
+
+    // BitField1 (16 bits)
+    int BitField1;
+    // Name: u16[10] (20 bytes)
+    ushort[10] Name;
+    // Height and Build (1 byte each)
+    byte Height;
+    byte Build;
+
+    // BitField2 .. BitField13 (each 16 bits)
+    ushort BitField2;
+    ushort BitField3;
+    ushort BitField4;
+    ushort BitField5;
+    ushort BitField6;
+    ushort BitField7;
+    ushort BitField8;
+    ushort BitField9;
+    ushort BitField10;
+    ushort BitField11;
+    ushort BitField12;
+    ushort BitField13;
+
+    // CreatorName: u16[10] (20 bytes)
+    ushort[10] CreatorName;
+    // Pad (2 bytes) and Crc (2 bytes)
+    ushort Pad;
+    ushort Crc;
+
+    // ----- BitField0 subfields -----
+    // Bits 0-7: MiiVersion
+    public int GetMiiVersion() => BitField0 & 0xFF;
+    public void SetMiiVersion!(int value)
+    {
+        BitField0 = (BitField0 & ~0xFF) | (value & 0xFF);
+    }
+
+    // Bit 8: Copyable (bool)
+    public bool GetCopyable() => ((BitField0 >> 8) & 0x1) != 0;
+    public void SetCopyable!(int value)
+    {
+        BitField0 = (BitField0 & ~(0x1 << 8)) | ((value & 0x1) << 8);
+    }
+
+    // Bit 9: NgWord (bool)
+    public bool GetNgWord() => ((BitField0 >> 9) & 0x1) != 0;
+    public void SetNgWord!(int value)
+    {
+        BitField0 = (BitField0 & ~(0x1 << 9)) | ((value & 0x1) << 9);
+    }
+
+    // Bits 10-11: RegionMove
+    public int GetRegionMove() => (BitField0 >> 10) & 0x3;
+    public void SetRegionMove!(int value)
+    {
+        BitField0 = (BitField0 & ~(0x3 << 10)) | ((value & 0x3) << 10);
+    }
+
+    // Bits 12-13: FontRegion
+    public int GetFontRegion() => (BitField0 >> 12) & 0x3;
+    public void SetFontRegion!(int value)
+    {
+        BitField0 = (BitField0 & ~(0x3 << 12)) | ((value & 0x3) << 12);
+    }
+
+    // Bits 16-19: RoomIndex
+    public int GetRoomIndex() => (BitField0 >> 16) & 0xF;
+    public void SetRoomIndex!(int value)
+    {
+        BitField0 = (BitField0 & ~(0xF << 16)) | ((value & 0xF) << 16);
+    }
+
+    // Bits 20-23: PositionInRoom
+    public int GetPositionInRoom() => (BitField0 >> 20) & 0xF;
+    public void SetPositionInRoom!(int value)
+    {
+        BitField0 = (BitField0 & ~(0xF << 20)) | ((value & 0xF) << 20);
+    }
+
+    // Bits 24-27: AuthorType
+    public int GetAuthorType() => (BitField0 >> 24) & 0xF;
+    public void SetAuthorType!(int value)
+    {
+        BitField0 = (BitField0 & ~(0xF << 24)) | ((value & 0xF) << 24);
+    }
+
+    // Bits 28-30: BirthPlatform
+    public int GetBirthPlatform() => (BitField0 >> 28) & 0x7;
+    public void SetBirthPlatform!(int value)
+    {
+        BitField0 = (BitField0 & ~(0x7 << 28)) | ((value & 0x7) << 28);
+    }
+
+    // ----- BitField1 subfields -----
+    // Bit 0: Gender
+    public int GetGender() => BitField1 & 0x1;
+    public void SetGender!(int value)
+    {
+        BitField1 = (BitField1 & ~0x1) | (value & 0x1);
+    }
+
+    // Bits 1-4: BirthMonth
+    public int GetBirthMonth() => (BitField1 >> 1) & 0xF;
+    public void SetBirthMonth!(int value)
+    {
+        BitField1 = (BitField1 & ~(0xF << 1)) | ((value & 0xF) << 1);
+    }
+
+    // Bits 5-9: BirthDay
+    public int GetBirthDay() => (BitField1 >> 5) & 0x1F;
+    public void SetBirthDay!(int value)
+    {
+        BitField1 = (BitField1 & ~(0x1F << 5)) | ((value & 0x1F) << 5);
+    }
+
+    // Bits 10-13: FavoriteColor
+    public int GetFavoriteColor() => (BitField1 >> 10) & 0xF;
+    public void SetFavoriteColor!(int value)
+    {
+        BitField1 = (BitField1 & ~(0xF << 10)) | ((value & 0xF) << 10);
+    }
+
+    // Bit 14: Favorite (bool)
+    public bool GetFavorite() => ((BitField1 >> 14) & 0x1) != 0;
+    public void SetFavorite!(int value)
+    {
+        BitField1 = (BitField1 & ~(0x1 << 14)) | ((value & 0x1) << 14);
+    }
+
+    public byte[] GetCreateId() => CreateId;
+    public void SetCreateId!(byte[] value)
+    {
+        for (int i = 0; i < CreateId.Length; i++)
+            CreateId[i] = value[i];
+    }
+
+    public byte[] GetAuthorId() => AuthorId;
+    public void SetAuthorId!(byte[] value)
+    {
+        for (int i = 0; i < AuthorId.Length; i++)
+            AuthorId[i] = value[i];
+    }
+
+    // ----- Name (u16[10]) -----
+    public ushort[] GetName() => Name;
+    public void SetName!(ushort[] value)
+    {
+        for (int i = 0; i < 10; i++)
+            Name[i] = value[i];
+    }
+
+    // ----- Height and Build -----
+    public int GetHeight() => Height;
+    public void SetHeight!(int value)
+    {
+        Height = value & 0xFF;
+    }
+
+    public int GetBuild() => Build;
+    public void SetBuild!(int value)
+    {
+        Build = value & 0xFF;
+    }
+
+    // ----- BitField2 subfields -----
+    // Bit 0: Localonly (bool)
+    public bool GetLocalonly() => ((BitField2 >> 0) & 0x1) != 0;
+    public void SetLocalonly!(int value)
+    {
+        BitField2 = (BitField2 & ~0x1) | (value & 0x1);
+    }
+
+    // Bits 1-4: FaceType
+    public int GetFaceType() => (BitField2 >> 1) & 0xF;
+    public void SetFaceType!(int value)
+    {
+        BitField2 = (BitField2 & ~(0xF << 1)) | ((value & 0xF) << 1);
+    }
+
+    // Bits 5-7: FaceColor
+    public int GetFaceColor() => (BitField2 >> 5) & 0x7;
+    public void SetFaceColor!(int value)
+    {
+        BitField2 = (BitField2 & ~(0x7 << 5)) | ((value & 0x7) << 5);
+    }
+
+    // Bits 8-11: FaceTex
+    public int GetFaceTex() => (BitField2 >> 8) & 0xF;
+    public void SetFaceTex!(int value)
+    {
+        BitField2 = (BitField2 & ~(0xF << 8)) | ((value & 0xF) << 8);
+    }
+
+    // Bits 12-15: FaceMake
+    public int GetFaceMake() => (BitField2 >> 12) & 0xF;
+    public void SetFaceMake!(int value)
+    {
+        BitField2 = (BitField2 & ~(0xF << 12)) | ((value & 0xF) << 12);
+    }
+
+    // ----- BitField3 subfields -----
+    // Bits 0-7: HairType
+    public int GetHairType() => BitField3 & 0xFF;
+    public void SetHairType!(int value)
+    {
+        BitField3 = (BitField3 & ~0xFF) | (value & 0xFF);
+    }
+
+    // Bits 8-10: HairColor
+    public int GetHairColor() => (BitField3 >> 8) & 0x7;
+    public void SetHairColor!(int value)
+    {
+        BitField3 = (BitField3 & ~(0x7 << 8)) | ((value & 0x7) << 8);
+    }
+
+    // Bit 11: HairFlip (bool)
+    public bool GetHairFlip() => ((BitField3 >> 11) & 0x1) != 0;
+    public void SetHairFlip!(int value)
+    {
+        BitField3 = (BitField3 & ~(0x1 << 11)) | ((value & 0x1) << 11);
+    }
+
+    // ----- BitField4 subfields -----
+    // Bits 0-5: EyeType
+    public int GetEyeType() => BitField4 & 0x3F;
+    public void SetEyeType!(int value)
+    {
+        BitField4 = (BitField4 & ~0x3F) | (value & 0x3F);
+    }
+
+    // Bits 6-8: EyeColor
+    public int GetEyeColor() => (BitField4 >> 6) & 0x7;
+    public void SetEyeColor!(int value)
+    {
+        BitField4 = (BitField4 & ~(0x7 << 6)) | ((value & 0x7) << 6);
+    }
+
+    // Bits 9-12: EyeScale
+    public int GetEyeScale() => (BitField4 >> 9) & 0xF;
+    public void SetEyeScale!(int value)
+    {
+        BitField4 = (BitField4 & ~(0xF << 9)) | ((value & 0xF) << 9);
+    }
+
+    // Bits 13-15: EyeAspect
+    public int GetEyeAspect() => (BitField4 >> 13) & 0x7;
+    public void SetEyeAspect!(int value)
+    {
+        BitField4 = (BitField4 & ~(0x7 << 13)) | ((value & 0x7) << 13);
+    }
+
+    // ----- BitField5 subfields -----
+    // Bits 0-4: EyeRotate
+    public int GetEyeRotate() => BitField5 & 0x1F;
+    public void SetEyeRotate!(int value)
+    {
+        BitField5 = (BitField5 & ~0x1F) | (value & 0x1F);
+    }
+
+    // Bits 5-8: EyeX
+    public int GetEyeX() => (BitField5 >> 5) & 0xF;
+    public void SetEyeX!(int value)
+    {
+        BitField5 = (BitField5 & ~(0xF << 5)) | ((value & 0xF) << 5);
+    }
+
+    // Bits 9-13: EyeY
+    public int GetEyeY() => (BitField5 >> 9) & 0x1F;
+    public void SetEyeY!(int value)
+    {
+        BitField5 = (BitField5 & ~(0x1F << 9)) | ((value & 0x1F) << 9);
+    }
+
+    // ----- BitField6 subfields -----
+    // Bits 0-4: EyebrowType
+    public int GetEyebrowType() => BitField6 & 0x1F;
+    public void SetEyebrowType!(int value)
+    {
+        BitField6 = (BitField6 & ~0x1F) | (value & 0x1F);
+    }
+
+    // Bits 5-7: EyebrowColor
+    public int GetEyebrowColor() => (BitField6 >> 5) & 0x7;
+    public void SetEyebrowColor!(int value)
+    {
+        BitField6 = (BitField6 & ~(0x7 << 5)) | ((value & 0x7) << 5);
+    }
+
+    // Bits 8-11: EyebrowScale
+    public int GetEyebrowScale() => (BitField6 >> 8) & 0xF;
+    public void SetEyebrowScale!(int value)
+    {
+        BitField6 = (BitField6 & ~(0xF << 8)) | ((value & 0xF) << 8);
+    }
+
+    // Bits 12-14: EyebrowAspect
+    public int GetEyebrowAspect() => (BitField6 >> 12) & 0x7;
+    public void SetEyebrowAspect!(int value)
+    {
+        BitField6 = (BitField6 & ~(0x7 << 12)) | ((value & 0x7) << 12);
+    }
+
+    // ----- BitField7 subfields -----
+    // Bits 0-4: EyebrowRotate
+    public int GetEyebrowRotate() => BitField7 & 0x1F;
+    public void SetEyebrowRotate!(int value)
+    {
+        BitField7 = (BitField7 & ~0x1F) | (value & 0x1F);
+    }
+
+    // Bits 5-8: EyebrowX
+    public int GetEyebrowX() => (BitField7 >> 5) & 0xF;
+    public void SetEyebrowX!(int value)
+    {
+        BitField7 = (BitField7 & ~(0xF << 5)) | ((value & 0xF) << 5);
+    }
+
+    // Bits 9-13: EyebrowY
+    public int GetEyebrowY() => (BitField7 >> 9) & 0x1F;
+    public void SetEyebrowY!(int value)
+    {
+        BitField7 = (BitField7 & ~(0x1F << 9)) | ((value & 0x1F) << 9);
+    }
+
+    // ----- BitField8 subfields -----
+    // Bits 0-4: NoseType
+    public int GetNoseType() => BitField8 & 0x1F;
+    public void SetNoseType!(int value)
+    {
+        BitField8 = (BitField8 & ~0x1F) | (value & 0x1F);
+    }
+
+    // Bits 5-8: NoseScale
+    public int GetNoseScale() => (BitField8 >> 5) & 0xF;
+    public void SetNoseScale!(int value)
+    {
+        BitField8 = (BitField8 & ~(0xF << 5)) | ((value & 0xF) << 5);
+    }
+
+    // Bits 9-13: NoseY
+    public int GetNoseY() => (BitField8 >> 9) & 0x1F;
+    public void SetNoseY!(int value)
+    {
+        BitField8 = (BitField8 & ~(0x1F << 9)) | ((value & 0x1F) << 9);
+    }
+
+    // ----- BitField9 subfields -----
+    // Bits 0-5: MouthType
+    public int GetMouthType() => BitField9 & 0x3F;
+    public void SetMouthType!(int value)
+    {
+        BitField9 = (BitField9 & ~0x3F) | (value & 0x3F);
+    }
+
+    // Bits 6-8: MouthColor
+    public int GetMouthColor() => (BitField9 >> 6) & 0x7;
+    public void SetMouthColor!(int value)
+    {
+        BitField9 = (BitField9 & ~(0x7 << 6)) | ((value & 0x7) << 6);
+    }
+
+    // Bits 9-12: MouthScale
+    public int GetMouthScale() => (BitField9 >> 9) & 0xF;
+    public void SetMouthScale!(int value)
+    {
+        BitField9 = (BitField9 & ~(0xF << 9)) | ((value & 0xF) << 9);
+    }
+
+    // Bits 13-15: MouthAspect
+    public int GetMouthAspect() => (BitField9 >> 13) & 0x7;
+    public void SetMouthAspect!(int value)
+    {
+        BitField9 = (BitField9 & ~(0x7 << 13)) | ((value & 0x7) << 13);
+    }
+
+    // ----- BitField10 subfields -----
+    // Bits 0-4: MouthY
+    public int GetMouthY() => BitField10 & 0x1F;
+    public void SetMouthY!(int value)
+    {
+        BitField10 = (BitField10 & ~0x1F) | (value & 0x1F);
+    }
+
+    // Bits 5-7: MustacheType
+    public int GetMustacheType() => (BitField10 >> 5) & 0x7;
+    public void SetMustacheType!(int value)
+    {
+        BitField10 = (BitField10 & ~(0x7 << 5)) | ((value & 0x7) << 5);
+    }
+
+    // ----- BitField11 subfields -----
+    // Bits 0-2: BeardType
+    public int GetBeardType() => BitField11 & 0x7;
+    public void SetBeardType!(int value)
+    {
+        BitField11 = (BitField11 & ~0x7) | (value & 0x7);
+    }
+
+    // Bits 3-5: BeardColor
+    public int GetBeardColor() => (BitField11 >> 3) & 0x7;
+    public void SetBeardColor!(int value)
+    {
+        BitField11 = (BitField11 & ~(0x7 << 3)) | ((value & 0x7) << 3);
+    }
+
+    // Bits 6-9: BeardScale
+    public int GetBeardScale() => (BitField11 >> 6) & 0xF;
+    public void SetBeardScale!(int value)
+    {
+        BitField11 = (BitField11 & ~(0xF << 6)) | ((value & 0xF) << 6);
+    }
+
+    // Bits 10-14: BeardY
+    public int GetBeardY() => (BitField11 >> 10) & 0x1F;
+    public void SetBeardY!(int value)
+    {
+        BitField11 = (BitField11 & ~(0x1F << 10)) | ((value & 0x1F) << 10);
+    }
+
+    // ----- BitField12 subfields -----
+    // Bits 0-3: GlassType
+    public int GetGlassType() => BitField12 & 0xF;
+    public void SetGlassType!(int value)
+    {
+        BitField12 = (BitField12 & ~0xF) | (value & 0xF);
+    }
+
+    // Bits 4-6: GlassColor
+    public int GetGlassColor() => (BitField12 >> 4) & 0x7;
+    public void SetGlassColor!(int value)
+    {
+        BitField12 = (BitField12 & ~(0x7 << 4)) | ((value & 0x7) << 4);
+    }
+
+    // Bits 7-10: GlassScale
+    public int GetGlassScale() => (BitField12 >> 7) & 0xF;
+    public void SetGlassScale!(int value)
+    {
+        BitField12 = (BitField12 & ~(0xF << 7)) | ((value & 0xF) << 7);
+    }
+
+    // Bits 11-15: GlassY
+    public int GetGlassY() => (BitField12 >> 11) & 0x1F;
+    public void SetGlassY!(int value)
+    {
+        BitField12 = (BitField12 & ~(0x1F << 11)) | ((value & 0x1F) << 11);
+    }
+
+    // ----- BitField13 subfields -----
+    // Bit 0: MoleType (bool)
+    public bool GetMoleType() => (BitField13 & 0x1) != 0;
+    public void SetMoleType!(int value)
+    {
+        BitField13 = (BitField13 & ~0x1) | (value & 0x1);
+    }
+
+    // Bits 1-4: MoleScale
+    public int GetMoleScale() => (BitField13 >> 1) & 0xF;
+    public void SetMoleScale!(int value)
+    {
+        BitField13 = (BitField13 & ~(0xF << 1)) | ((value & 0xF) << 1);
+    }
+
+    // Bits 5-9: MoleX
+    public int GetMoleX() => (BitField13 >> 5) & 0x1F;
+    public void SetMoleX!(int value)
+    {
+        BitField13 = (BitField13 & ~(0x1F << 5)) | ((value & 0x1F) << 5);
+    }
+
+    // Bits 10-14: MoleY
+    public int GetMoleY() => (BitField13 >> 10) & 0x1F;
+    public void SetMoleY!(int value)
+    {
+        BitField13 = (BitField13 & ~(0x1F << 10)) | ((value & 0x1F) << 10);
+    }
+
+    // ----- CreatorName (u16[10]) -----
+    public ushort[] GetCreatorName() => CreatorName;
+    public void SetCreatorName!(ushort[] value)
+    {
+        for (int i = 0; i < 10; i++)
+            CreatorName[i] = value[i];
+    }
+
+    // Pad (2 bytes)
+    public int GetPad() => Pad;
+    public void SetPad!(int value)
+    {
+        Pad = value & 0xFFFF;
+    }
+
+    // Crc (2 bytes)
+    public int GetCrc() => Crc;
+    public void SetCrc!(int value)
+    {
+        Crc = value & 0xFFFF;
+    }
+
+    // ----- Extra methods -----
+
+    // UpdateCrc: compute a simple checksum (sum of all bytes modulo 65536)
+    //public void UpdateCrc!()
+    //{
+    //    byte[] data = ToBytes();
+        // Exclude the last 2 bytes (Crc field)
+    //    ushort sum = Crc16Ccitt.Calculate(data, 96 - 2, 0);
+    //    SetCrc(sum & 0xFFFF);
+    //}
+
+    // Helper methods for serialization.
+
+    void WriteIntToBytes(byte[]! dest, int offset, int value, int count)
+    {
+        for (int i = 0; i < count; i++)
+        {
+            dest[offset + i] = (value >> (8 * i)) & 0xFF;
+        }
+    }
+
+    void WriteLongToBytes(byte[]! dest, int offset, long value, int count)
+    {
+        for (int i = 0; i < count; i++)
+        {
+            dest[offset + i] = (value >> (8 * i)) & 0xFF;
+        }
+    }
+
+    void WriteBytes(byte[]! dest, int offset, byte[]! src, int count)
+    {
+        for (int i = 0; i < count; i++)
+        {
+            dest[offset + i] = src[i];
+        }
+    }
+
+    void WriteUShortArrayToBytes(byte[]! dest, int offset, ushort[]! arr, int count)
+    {
+        // 'count' is the number of ushort elements to write.
+        for (int i = 0; i < count; i++)
+        {
+            dest[offset + i * 2]     = arr[i] & 0xFF;
+            dest[offset + i * 2 + 1] = (arr[i] >> 8) & 0xFF;
+        }
+    }
+
+    int ReadIntFromBytes(byte[] src, int offset, int count)
+    {
+        int value = 0;
+        for (int i = 0; i < count; i++)
+        {
+            value |= src[offset + i] << (8 * i);
+        }
+        return value;
+    }
+
+    long ReadLongFromBytes(byte[] src, int offset, int count)
+    {
+        long value = 0;
+        for (int i = 0; i < count; i++)
+        {
+            value |= src[offset + i] << (8 * i);
+        }
+        return value;
+    }
+
+    void ReadBytesInto(byte[] src, int offset, byte[]! dest, int count)
+    {
+        for (int i = 0; i < count; i++)
+        {
+            dest[i] = src[offset + i];
+        }
+    }
+
+    void ReadUShortArrayFromBytes(byte[] src, int offset, ushort[]! arr, int count)
+    {
+        // 'count' is the number of ushort elements to read.
+        for (int i = 0; i < count; i++)
+        {
+            int low  = src[offset + i * 2];
+            int high = src[offset + i * 2 + 1];
+            arr[i] = low | (high << 8);
+        }
+    }
+
+    public void ToBytes!(byte[]# output)
+    {
+        int offset = 0;
+
+        WriteIntToBytes(output, offset, BitField0, 4); offset += 4;
+        WriteBytes(output, offset, AuthorId, 8); offset += 8;
+        WriteBytes(output, offset, CreateId, 10); offset += 10;
+        WriteBytes(output, offset, Reserved2, 2); offset += 2;
+        WriteIntToBytes(output, offset, BitField1, 2); offset += 2;
+        WriteUShortArrayToBytes(output, offset, Name, 10); offset += 20;
+        output[offset++] = Height;
+        output[offset++] = Build;
+        WriteIntToBytes(output, offset, BitField2, 2); offset += 2;
+        WriteIntToBytes(output, offset, BitField3, 2); offset += 2;
+        WriteIntToBytes(output, offset, BitField4, 2); offset += 2;
+        WriteIntToBytes(output, offset, BitField5, 2); offset += 2;
+        WriteIntToBytes(output, offset, BitField6, 2); offset += 2;
+        WriteIntToBytes(output, offset, BitField7, 2); offset += 2;
+        WriteIntToBytes(output, offset, BitField8, 2); offset += 2;
+        WriteIntToBytes(output, offset, BitField9, 2); offset += 2;
+        WriteIntToBytes(output, offset, BitField10, 2); offset += 2;
+        WriteIntToBytes(output, offset, BitField11, 2); offset += 2;
+        WriteIntToBytes(output, offset, BitField12, 2); offset += 2;
+        WriteIntToBytes(output, offset, BitField13, 2); offset += 2;
+        WriteUShortArrayToBytes(output, offset, CreatorName, 10); offset += 20;
+        WriteIntToBytes(output, offset, Pad, 2); offset += 2;
+
+        ushort crc = Crc16Ccitt.Calculate(output, 94, 0);
+        Console.WriteLine($"CRC16: {crc:X4}");
+        // Write CRC-16 as big-endian.
+        output[offset++] = crc >> 8;
+        output[offset++] = crc & 0xFF;
+    }
+
+    public void SetFromBytes!(byte[] data)
+    {
+        // Ensure data is the expected length.
+        //if (data.Length < 96)
+        //    return; // Alternatively, add proper error handling.
+
+        int offset = 0;
+        BitField0 = ReadIntFromBytes(data, offset, 4); offset += 4;
+        ReadBytesInto(data, offset, AuthorId, 8); offset += 8;
+        ReadBytesInto(data, offset, CreateId, 10); offset += 10;
+        ReadBytesInto(data, offset, Reserved2, 2); offset += 2;
+        BitField1 = ReadIntFromBytes(data, offset, 2); offset += 2;
+        ReadUShortArrayFromBytes(data, offset, Name, 10); offset += 20;
+        Height = data[offset++];
+        Build  = data[offset++];
+        BitField2 = ReadIntFromBytes(data, offset, 2); offset += 2;
+        BitField3 = ReadIntFromBytes(data, offset, 2); offset += 2;
+        BitField4 = ReadIntFromBytes(data, offset, 2); offset += 2;
+        BitField5 = ReadIntFromBytes(data, offset, 2); offset += 2;
+        BitField6 = ReadIntFromBytes(data, offset, 2); offset += 2;
+        BitField7 = ReadIntFromBytes(data, offset, 2); offset += 2;
+        BitField8 = ReadIntFromBytes(data, offset, 2); offset += 2;
+        BitField9 = ReadIntFromBytes(data, offset, 2); offset += 2;
+        BitField10 = ReadIntFromBytes(data, offset, 2); offset += 2;
+        BitField11 = ReadIntFromBytes(data, offset, 2); offset += 2;
+        BitField12 = ReadIntFromBytes(data, offset, 2); offset += 2;
+        BitField13 = ReadIntFromBytes(data, offset, 2); offset += 2;
+        ReadUShortArrayFromBytes(data, offset, CreatorName, 10); offset += 20;
+        Pad = ReadIntFromBytes(data, offset, 2); offset += 2;
+        Crc = ReadIntFromBytes(data, offset, 2); offset += 2;
+    }
+
+
+    // ----- Methods to map between Ver3StoreData and Ver3CharInfo -----
+    public void SetFromCharInfo!(Ver3CharInfo info)
+    {
+        SetMiiVersion(info.GetMiiVersion());
+        SetFaceType(info.GetFaceType());
+        SetFaceColor(info.GetFaceColor());
+        SetFaceTex(info.GetFaceTex());
+        SetFaceMake(info.GetFaceMake());
+        SetHairType(info.GetHairType());
+        SetHairColor(info.GetHairColor());
+        SetHairFlip(info.GetHairFlip());
+        SetEyeType(info.GetEyeType());
+        SetEyeColor(info.GetEyeColor());
+        SetEyeScale(info.GetEyeScale());
+        SetEyeAspect(info.GetEyeAspect());
+        SetEyeRotate(info.GetEyeRotate());
+        SetEyeX(info.GetEyeX());
+        SetEyeY(info.GetEyeY());
+        SetEyebrowType(info.GetEyebrowType());
+        SetEyebrowColor(info.GetEyebrowColor());
+        SetEyebrowScale(info.GetEyebrowScale());
+        SetEyebrowAspect(info.GetEyebrowAspect());
+        SetEyebrowRotate(info.GetEyebrowRotate());
+        SetEyebrowX(info.GetEyebrowX());
+        SetEyebrowY(info.GetEyebrowY());
+        SetNoseType(info.GetNoseType());
+        SetNoseScale(info.GetNoseScale());
+        SetNoseY(info.GetNoseY());
+        SetMouthType(info.GetMouthType());
+        SetMouthColor(info.GetMouthColor());
+        SetMouthScale(info.GetMouthScale());
+        SetMouthAspect(info.GetMouthAspect());
+        SetMouthY(info.GetMouthY());
+        SetMustacheType(info.GetMustacheType());
+        SetBeardType(info.GetBeardType());
+        SetBeardColor(info.GetBeardColor());
+        SetBeardScale(info.GetBeardScale());
+        SetBeardY(info.GetBeardY());
+        SetGlassType(info.GetGlassType());
+        SetGlassColor(info.GetGlassColor());
+        SetGlassScale(info.GetGlassScale());
+        SetGlassY(info.GetGlassY());
+        SetMoleType(info.GetMoleType());
+        SetMoleScale(info.GetMoleScale());
+        SetMoleX(info.GetMoleX());
+        SetMoleY(info.GetMoleY());
+        SetHeight(info.GetHeight());
+        SetBuild(info.GetBuild());
+        SetGender(info.GetGender());
+        SetBirthMonth(info.GetBirthMonth());
+        SetBirthDay(info.GetBirthDay());
+        SetFavoriteColor(info.GetFavoriteColor());
+        SetFavorite(info.GetFavorite() ? 1 : 0);
+        SetCopyable(info.GetCopyable() ? 1 : 0);
+        SetNgWord(info.GetNgWord() ? 1 : 0);
+        SetLocalonly(info.GetLocalonly() ? 1 : 0);
+
+        SetRegionMove(info.GetRegionMove());
+        SetFontRegion(info.GetFontRegion());
+        SetRoomIndex(info.GetRoomIndex());
+        SetPositionInRoom(info.GetPositionInRoom());
+        SetBirthPlatform(info.GetBirthPlatform());
+        SetAuthorType(info.GetAuthorType());
+
+        SetName(info.GetName());
+        SetCreatorName(info.GetCreatorName());
+        SetCreateId(info.GetCreateId());
+        SetAuthorId(info.GetAuthorId());
+    }
+
+    public void ToCharInfo(Ver3CharInfo# info)
+    {
+        info.SetMiiVersion(GetMiiVersion());
+        info.SetFaceType(GetFaceType());
+        info.SetFaceColor(GetFaceColor());
+        info.SetFaceTex(GetFaceTex());
+        info.SetFaceMake(GetFaceMake());
+        info.SetHairType(GetHairType());
+        info.SetHairColor(GetHairColor());
+        info.SetHairFlip(GetHairFlip() ? 1 : 0);
+        info.SetEyeType(GetEyeType());
+        info.SetEyeColor(GetEyeColor());
+        info.SetEyeScale(GetEyeScale());
+        info.SetEyeAspect(GetEyeAspect());
+        info.SetEyeRotate(GetEyeRotate());
+        info.SetEyeX(GetEyeX());
+        info.SetEyeY(GetEyeY());
+        info.SetEyebrowType(GetEyebrowType());
+        info.SetEyebrowColor(GetEyebrowColor());
+        info.SetEyebrowScale(GetEyebrowScale());
+        info.SetEyebrowAspect(GetEyebrowAspect());
+        info.SetEyebrowRotate(GetEyebrowRotate());
+        info.SetEyebrowX(GetEyebrowX());
+        info.SetEyebrowY(GetEyebrowY());
+        info.SetNoseType(GetNoseType());
+        info.SetNoseScale(GetNoseScale());
+        info.SetNoseY(GetNoseY());
+        info.SetMouthType(GetMouthType());
+        info.SetMouthColor(GetMouthColor());
+        info.SetMouthScale(GetMouthScale());
+        info.SetMouthAspect(GetMouthAspect());
+        info.SetMouthY(GetMouthY());
+        info.SetMustacheType(GetMustacheType());
+        info.SetBeardType(GetBeardType());
+        info.SetBeardColor(GetBeardColor());
+        info.SetBeardScale(GetBeardScale());
+        info.SetBeardY(GetBeardY());
+        info.SetGlassType(GetGlassType());
+        info.SetGlassColor(GetGlassColor());
+        info.SetGlassScale(GetGlassScale());
+        info.SetGlassY(GetGlassY());
+        info.SetMoleType(GetMoleType() ? 1 : 0);
+        info.SetMoleScale(GetMoleScale());
+        info.SetMoleX(GetMoleX());
+        info.SetMoleY(GetMoleY());
+        info.SetHeight(GetHeight());
+        info.SetBuild(GetBuild());
+        info.SetGender(GetGender());
+        info.SetBirthMonth(GetBirthMonth());
+        info.SetBirthDay(GetBirthDay());
+        info.SetFavoriteColor(GetFavoriteColor());
+        info.SetFavorite(GetFavorite() ? 1 : 0);
+        info.SetCopyable(GetCopyable() ? 1 : 0);
+        info.SetNgWord(GetNgWord() ? 1 : 0);
+        info.SetLocalonly(GetLocalonly() ? 1 : 0);
+
+        info.SetRegionMove(GetRegionMove());
+        info.SetFontRegion(GetFontRegion());
+        info.SetRoomIndex(GetRoomIndex());
+        info.SetPositionInRoom(GetPositionInRoom());
+        info.SetBirthPlatform(GetBirthPlatform());
+        info.SetAuthorType(GetAuthorType());
+
+        info.SetName(GetName());
+        info.SetCreatorName(GetCreatorName());
+        info.SetCreateId(CreateId);
+        info.SetAuthorId(AuthorId);
+    }
+
+    public static void CharInfoToStoreDataBytes(byte[]# output, Ver3CharInfo info)
+    {
+        Ver3StoreData# storeData = new Ver3StoreData();
+        storeData.SetFromCharInfo(info);
+        storeData.ToBytes(output);
+    }
+
+    public static void StoreDataBytesToCharInfo(byte[] src, Ver3CharInfo# info)
+    {
+        Ver3StoreData# storeData = new Ver3StoreData();
+        storeData.SetFromBytes(src);
+        storeData.ToCharInfo(info);
+    }
+
+#else
+    public static void CharInfoToStoreDataBytes(byte[]# output, Ver3CharInfo info)
+    {
+       // Clear buffer
+        for (int i = 0; i < Length; i++)
+            output[i] = 0;
+
+        ushort tmpU16;
+        output[0] = (output[0] & ~(255 << 0)) | ((info.GetMiiVersion() & 255) << 0);
+        output[1] = (output[1] & ~(1 << 0)) | ((info.GetCopyable() ? 1 : 0) << 0);
+        output[1] = (output[1] & ~(1 << 1)) | ((info.GetNgWord() ? 1 : 0) << 1);
+        output[1] = (output[1] & ~(3 << 2)) | ((info.GetRegionMove() & 3) << 2);
+        output[1] = (output[1] & ~(3 << 4)) | ((info.GetFontRegion() & 3) << 4);
+        // reserved_0: not exposed
+        output[2] = (output[2] & ~(15 << 0)) | ((info.GetRoomIndex() & 15) << 0);
+        output[2] = (output[2] & ~(15 << 4)) | ((info.GetPositionInRoom() & 15) << 4);
+        output[3] = (output[3] & ~(15 << 0)) | ((info.GetAuthorType() & 15) << 0);
+        output[3] = (output[3] & ~(7 << 4)) | ((info.GetBirthPlatform() & 7) << 4);
+        // reserved_1: not exposed
+
+        info.GetAuthorId().CopyTo(0, output, 4, 8);
+
+        info.GetCreateId().CopyTo(0, output, 12, 10);
+
+        // reserved_2[2] = already zero
+        output[24] = (output[24] & ~(1 << 0)) | ((info.GetGender() & 1) << 0);
+        output[24] = (output[24] & ~(15 << 1)) | ((info.GetBirthMonth() & 15) << 1);
+        tmpU16 = output[24] | (output[25] << 8);
+        tmpU16 = (tmpU16 & ~(31 << 5)) | ((info.GetBirthDay() & 31) << 5);
+        output[24] = tmpU16 & 0xFF;
+        output[25] = (tmpU16 >> 8) & 0xFF;
+        output[25] = (output[25] & ~(15 << 2)) | ((info.GetFavoriteColor() & 15) << 2);
+        output[25] = (output[25] & ~(1 << 6)) | ((info.GetFavorite() ? 1 : 0) << 6);
+        // padding_0 not exposed
+
+        ushort[] name = info.GetName();
+        for (int i = 0; i < 10; i++) {
+            output[26 + i * 2] = name[i];
+            output[26 + i * 2 + 1] = (name[i] >> 8);
+        }
+
+        output[46] = info.GetHeight();
+        output[47] = info.GetBuild();
+
+        output[48] = (output[48] & ~(1 << 0)) | ((info.GetLocalonly() ? 1 : 0) << 0);
+        output[48] = (output[48] & ~(15 << 1)) | ((info.GetFaceType() & 15) << 1);
+        output[48] = (output[48] & ~(7 << 5)) | ((info.GetFaceColor() & 7) << 5);
+        output[49] = (output[49] & ~(15 << 0)) | ((info.GetFaceTex() & 15) << 0);
+        output[49] = (output[49] & ~(15 << 4)) | ((info.GetFaceMake() & 15) << 4);
+        output[50] = (output[50] & ~(255 << 0)) | ((info.GetHairType() & 255) << 0);
+        output[51] = (output[51] & ~(7 << 0)) | ((info.GetHairColor() & 7) << 0);
+        output[51] = (output[51] & ~(1 << 3)) | ((info.GetHairFlip() & 1) << 3);
+        // padding_1 not exposed
+
+        output[52] = (output[52] & ~(63 << 0)) | ((info.GetEyeType() & 63) << 0);
+        tmpU16 = output[52] | (output[53] << 8);
+        tmpU16 = (tmpU16 & ~(7 << 6)) | ((info.GetEyeColor() & 7) << 6);
+        output[52] = tmpU16;
+        output[53] = (tmpU16 >> 8);
+        output[53] = (output[53] & ~(15 << 1)) | ((info.GetEyeScale() & 15) << 1);
+        output[53] = (output[53] & ~(7 << 5)) | ((info.GetEyeAspect() & 7) << 5);
+
+        output[54] = (output[54] & ~(31 << 0)) | ((info.GetEyeRotate() & 31) << 0);
+        tmpU16 = output[54] | (output[55] << 8);
+        tmpU16 = (tmpU16 & ~(15 << 5)) | ((info.GetEyeX() & 15) << 5);
+        output[54] = tmpU16;
+        output[55] = (tmpU16 >> 8);
+        output[55] = (output[55] & ~(31 << 1)) | ((info.GetEyeY() & 31) << 1);
+        // padding_2 not exposed
+
+        output[56] = (output[56] & ~(31 << 0)) | ((info.GetEyebrowType() & 31) << 0);
+        output[56] = (output[56] & ~(7 << 5)) | ((info.GetEyebrowColor() & 7) << 5);
+        output[57] = (output[57] & ~(15 << 0)) | ((info.GetEyebrowScale() & 15) << 0);
+        output[57] = (output[57] & ~(7 << 4)) | ((info.GetEyebrowAspect() & 7) << 4);
+        // padding_3 not exposed
+
+        output[58] = (output[58] & ~(31 << 0)) | ((info.GetEyebrowRotate() & 31) << 0);
+        tmpU16 = output[58] | (output[59] << 8);
+        tmpU16 = (tmpU16 & ~(15 << 5)) | ((info.GetEyebrowX() & 15) << 5);
+        output[58] = (tmpU16 & 0xFF);
+        output[59] = ((tmpU16 >> 8) & 0xFF);
+        output[59] = (output[59] & ~(31 << 1)) | ((info.GetEyebrowY() & 31) << 1);
+        // padding_4 not exposed
+
+        output[60] = (output[60] & ~(31 << 0)) | ((info.GetNoseType() & 31) << 0);
+        tmpU16 = output[60] | (output[61] << 8);
+        tmpU16 = (tmpU16 & ~(15 << 5)) | ((info.GetNoseScale() & 15) << 5);
+        output[60] = (tmpU16 & 0xFF);
+        output[61] = ((tmpU16 >> 8) & 0xFF);
+        output[61] = (output[61] & ~(31 << 1)) | ((info.GetNoseY() & 31) << 1);
+        // padding_5 not exposed
+
+        output[62] = (output[62] & ~(63 << 0)) | ((info.GetMouthType() & 63) << 0);
+        tmpU16 = output[62] | (output[63] << 8);
+        tmpU16 = (tmpU16 & ~(7 << 6)) | ((info.GetMouthColor() & 7) << 6);
+        output[62] = (tmpU16 & 0xFF);
+        output[63] = ((tmpU16 >> 8) & 0xFF);
+        output[63] = (output[63] & ~(15 << 1)) | ((info.GetMouthScale() & 15) << 1);
+        output[63] = (output[63] & ~(7 << 5)) | ((info.GetMouthAspect() & 7) << 5);
+        output[64] = (output[64] & ~(31 << 0)) | ((info.GetMouthY() & 31) << 0);
+        output[64] = (output[64] & ~(7 << 5)) | ((info.GetMustacheType() & 7) << 5);
+        // padding_6 not exposed
+
+        output[66] = (output[66] & ~(7 << 0)) | ((info.GetBeardType() & 7) << 0);
+        output[66] = (output[66] & ~(7 << 3)) | ((info.GetBeardColor() & 7) << 3);
+        tmpU16 = output[66] | (output[67] << 8);
+        tmpU16 = (tmpU16 & ~(15 << 6)) | ((info.GetBeardScale() & 15) << 6);
+        output[66] = (tmpU16 & 0xFF);
+        output[67] = ((tmpU16 >> 8) & 0xFF);
+        output[67] = (output[67] & ~(31 << 2)) | ((info.GetBeardY() & 31) << 2);
+        // padding_7 not exposed
+
+        output[68] = (output[68] & ~(15 << 0)) | ((info.GetGlassType() & 15) << 0);
+        output[68] = (output[68] & ~(7 << 4)) | ((info.GetGlassColor() & 7) << 4);
+        tmpU16 = output[68] | (output[69] << 8);
+        tmpU16 = (tmpU16 & ~(15 << 7)) | ((info.GetGlassScale() & 15) << 7);
+        output[68] = (tmpU16 & 0xFF);
+        output[69] = ((tmpU16 >> 8) & 0xFF);
+        output[69] = (output[69] & ~(31 << 3)) | ((info.GetGlassY() & 31) << 3);
+
+        output[70] = (output[70] & ~(1 << 0)) | ((info.GetMoleType() & 1) << 0);
+        output[70] = (output[70] & ~(15 << 1)) | ((info.GetMoleScale() & 15) << 1);
+        tmpU16 = output[70] | (output[71] << 8);
+        tmpU16 = (tmpU16 & ~(31 << 5)) | ((info.GetMoleX() & 31) << 5);
+        output[70] = (tmpU16 & 0xFF);
+        output[71] = ((tmpU16 >> 8) & 0xFF);
+        output[71] = (output[71] & ~(31 << 2)) | ((info.GetMoleY() & 31) << 2);
+        // padding_8 not exposed
+
+        ushort[] creatorName = info.GetCreatorName();
+        for (int i = 0; i < 10; i++) {
+            output[72 + i * 2] = (creatorName[i] & 0xFF);
+            output[72 + i * 2 + 1] = ((creatorName[i] >> 8) & 0xFF);
+        }
+
+        // pad9 not exposed
+
+        ushort crc = Crc16Ccitt.Calculate(output, 94, 0);
+        // Write CRC-16 as big-endian.
+        output[94] = crc >> 8;
+        output[95] = crc & 0xFF;
+    }
+    public static void StoreDataBytesToCharInfo(byte[] src, Ver3CharInfo# info)
+    {
+        info.SetMiiVersion(src[0]);
+        info.SetCopyable(src[1] & 1);
+        info.SetNgWord(src[1] >> 1 & 1);
+        info.SetRegionMove((src[1] >> 2 & 3));
+        info.SetFontRegion((src[1] >> 4 & 3));
+        info.SetRoomIndex((src[2] & 0xf));
+        info.SetPositionInRoom((src[2] >> 4));
+        info.SetAuthorType((src[3] & 0xf));
+        info.SetBirthPlatform((src[3] >> 4 & 7));
+        info.SetAuthorId(src, 4);
+        info.SetCreateId(src, 0xc);
+        info.SetGender((src[0x18] & 1));
+        info.SetBirthMonth((src[0x18] >> 1 & 0xf));
+        info.SetBirthDay((src[0x19] & 3) << 3 | (src[0x18] >> 5));
+        info.SetFavoriteColor((src[0x19] >> 2 & 0xf));
+        info.SetFavorite(src[0x19] >> 6 & 1);
+        ushort[10] name;
+        for (int i = 0; i < name.Length; i++)
+            name[i] = src[26 + i * 2] | (src[26 + i * 2 + 1] >> 8);
+        info.SetName(name);
+        info.SetHeight(src[0x2e]);
+        info.SetBuild(src[0x2f]);
+        info.SetLocalonly(src[0x30] & 1);
+        info.SetFaceType((src[0x30] >> 1 & 0xf));
+        info.SetFaceColor((src[0x30] >> 5));
+        info.SetFaceTex((src[0x31] & 0xf));
+        info.SetFaceMake((src[0x31] >> 4));
+        info.SetHairType(src[0x32]);
+        info.SetHairColor((src[0x33] & 7));
+        info.SetHairFlip((src[0x33] >> 3 & 1));
+        info.SetEyeType((src[0x34] & 0x3f));
+        info.SetEyeColor((src[0x35] & 1) << 2 | (src[0x34] >> 6));
+        info.SetEyeScale((src[0x35] >> 1 & 0xf));
+        info.SetEyeAspect((src[0x35] >> 5));
+        info.SetEyeRotate((src[0x36] & 0x1f));
+        info.SetEyeX((src[0x37] & 1) << 3 | (src[0x36] >> 5));
+        info.SetEyeY((src[0x37] >> 1 & 0x1f));
+        info.SetEyebrowType((src[0x38] & 0x1f));
+        info.SetEyebrowColor((src[0x38] >> 5));
+        info.SetEyebrowScale((src[0x39] & 0xf));
+        info.SetEyebrowAspect((src[0x39] >> 4 & 7));
+        info.SetEyebrowRotate((src[0x3a] & 0x1f));
+        info.SetEyebrowX((src[0x3b] & 1) << 3 | (src[0x3a] >> 5));
+        info.SetEyebrowY((src[0x3b] >> 1 & 0x1f));
+        info.SetNoseType((src[0x3c] & 0x1f));
+        info.SetNoseScale((src[0x3d] & 1) << 3 | (src[0x3c] >> 5));
+        info.SetNoseY((src[0x3d] >> 1 & 0x1f));
+        info.SetMouthType((src[0x3e] & 0x3f));
+        info.SetMouthColor((src[0x3f] & 1) << 2 | (src[0x3e] >> 6));
+        info.SetMouthScale((src[0x3f] >> 1 & 0xf));
+        info.SetMouthAspect((src[0x3f] >> 5));
+        info.SetMouthY((src[0x40] & 0x1f));
+        info.SetMustacheType((src[0x40] >> 5));
+        info.SetBeardType((src[0x42] & 7));
+        info.SetBeardColor((src[0x42] >> 3 & 7));
+        info.SetBeardScale((src[0x43] & 3) << 2 | (src[0x42] >> 6));
+        info.SetBeardY((src[0x43] >> 2 & 0x1f));
+        info.SetGlassType((src[0x44] & 0xf));
+        info.SetGlassColor((src[0x44] >> 4 & 7));
+        info.SetGlassScale((src[0x45] & 7) * 2 | (src[0x44] >> 7));
+        info.SetGlassY((src[0x45] >> 3));
+        info.SetMoleType((src[0x46] & 1));
+        info.SetMoleScale((src[0x46] >> 1 & 0xf));
+        info.SetMoleX((src[0x47] & 3) << 3 | (src[0x46] >> 5));
+        info.SetMoleY((src[0x47] >> 2 & 0x1f));
+        ushort[10] creatorName;
+        for (int i = 0; i < creatorName.Length; i++)
+            creatorName[i] = src[72 + i * 2] | (src[72 + i * 2 + 1] >> 8);
+        info.SetCreatorName(creatorName);
+    }
+#endif
+}
+
+
+
+public class Hello
+{
+    public static void Main()
+    {
+        byte[] data = resource<byte[]>("JasmineChlora.ffsd");
+        Console.WriteLine("constructing new Ver3StoreData with contents.");
+        Ver3CharInfo# charInfo = new Ver3CharInfo(); // new blank Ver3CharInfo
+        /*
+        Ver3StoreData# storeData = new Ver3StoreData(); // new blank Ver3StoreData
+        storeData.SetFromBytes(data); // set values from bytes
+        Ver3CharInfo# charInfo = new Ver3CharInfo(); // new blank Ver3CharInfo
+        storeData.ToCharInfo(charInfo); // convert StoreData to CharInfo
+        */
+        Ver3StoreData.StoreDataBytesToCharInfo(data, charInfo);
+
+        Console.WriteLine("converted to CharInfo, printing contents:");
+        charInfo.Dump(); // print contents of CharInfo
+        Console.WriteLine("converting from charinfo back to Ver3StoreData:");
+
+        //charInfo = new Ver3CharInfo(); // new blank Ver3CharInfo
+        byte[]# newData = new byte[96];
+        Ver3StoreData.CharInfoToStoreDataBytes(newData, charInfo);
+        Console.WriteLine($"re-encoded back into base64: {Convert.ToBase64String(newData, 0, 96)}");
+    }
+}

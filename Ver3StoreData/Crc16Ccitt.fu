@@ -1,0 +1,105 @@
+/// Implements the CRC-16/CCITT checksum calculation.
+///
+/// This class provides a static method for computing the CRC-16/CCITT checksum over an input byte array.
+/// The algorithm uses the polynomial 0x1021, an initial value of 0xFFFF, and a default context of 0x0000.
+/// The method processes a given number of bytes from the input and can be seeded with a custom context.
+public class Crc16Ccitt
+{
+    /// The CRC-16/CCITT polynomial.
+    const ushort Poly = 0x1021;
+
+    /// The initial value used for CRC calculation.
+    const ushort Init = 0xFFFF;
+
+    /// The default context (seed) for CRC calculation.
+    const ushort Context = 0x0000;
+
+    /// Calculates the CRC-16/CCITT checksum for the specified input data.
+    public static ushort Calculate(
+        /// The byte array containing the data over which to compute the checksum.
+        byte[] input,
+        /// The number of bytes from the input array to process.
+        int length,
+        /// The initial CRC context value to start with; defaults to Context.
+        ushort context = Context)
+    {
+        return CalculateFast(input, length, context);
+    }
+
+
+    /// Calculates the CRC-16/CCITT checksum for the specified input data.
+    public static ushort CalculateShift(byte[] input, int length, ushort context = Context)
+    {
+        // Determine starting CRC value: if context is the default (0x0000), start with Init.
+        ushort crc = context;//(context == Context) ? Init : context;
+
+
+        // Iterate over each byte in the input array.
+        for (int i = 0; i < length; i++)
+        {
+            // XOR byte into the high byte of CRC.
+            crc ^= input[i] << 8;
+
+            // For each byte, process 8 bit shifts.
+            // This inner loop updates the CRC by shifting left and conditionally XOR’ing with the polynomial.
+            for (int bit = 0; bit < 8; bit++)
+            {
+                // Check if the highest bit (bit 15) is set.
+                if ((crc & 0x8000) != 0)
+                {
+                    // If set, shift left by 1 and XOR with the polynomial.
+                    crc = ((crc << 1) ^ Poly) & 0xFFFF;
+                }
+                else
+                {
+                    // Otherwise, simply shift left by 1.
+                    crc = (crc << 1) & 0xFFFF;
+                }
+            }
+        }
+
+        // Return the final CRC value.
+        return crc;
+    }
+
+
+
+    /// Calculates the CRC-16/CCITT checksum for the specified input data.
+    /// Courtesy of Luciano Barcaro: https://stackoverflow.com/a/30357446
+    public static ushort CalculateFast(byte[] input, int length, ushort context = Context)
+    {
+        // Determine starting CRC value.
+        ushort crc = context;
+
+        // Extract the most significant byte (MSB) from the initial CRC.
+        byte msb = crc >> 8; // Shift right 8 bits.
+        // Extract the least significant byte (LSB) from the initial CRC.
+        byte lsb = crc & 0xFF; // Mask with 0xFF to get only the lower 8 bits.
+
+        // Process each byte in the input.
+        for (int i = 0; i < length; i++)
+        {
+            // XOR the byte value with the current MSB.
+            // This step introduces the data into the checksum calculation.
+            int x = input[i] ^ msb;
+            // Combine bits within x to further scramble the bits.
+            x ^= (x >> 4); // XOR with its right-shifted value by 4 bits.
+
+            // Compute the new MSB value:
+            // - Start with the previous LSB value.
+            // - XOR with x shifted right by 3 bits to bring in bits from lower positions.
+            // - XOR with x shifted left by 4 bits to mix in higher-order bits.
+            // - Finally, mask with 0xFF to ensure the result stays within 8 bits.
+            msb = (lsb ^ (x >> 3) ^ (x << 4)) & 0xFF;
+            // Compute the new LSB value:
+            // - XOR x with x shifted left by 5 bits.
+            // - Mask with 0xFF to maintain an 8-bit result.
+            lsb = (x ^ (x << 5)) & 0xFF;
+        }
+
+        // Combine the two bytes into one 16-bit value.
+        // The MSB is shifted left by 8 bits to occupy the high-order byte.
+        // The LSB occupies the low-order byte.
+        return (msb << 8) | lsb;
+    }
+}
