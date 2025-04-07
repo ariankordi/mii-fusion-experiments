@@ -1,0 +1,120 @@
+// TODO: More thoroughly think of test Mii data to use here. Unbiased?
+
+public class Test
+{
+    public static void AssertEquals(int left, int right) throws Exception
+    {
+        if (left != right)
+        {
+            throw Exception($"Values are not equal: {left}, {right}");
+        }
+    }
+
+    // TODO TODO: Definitely need more samples. Iterate through table?
+    public static void TestJasmineChloraDecode() throws Exception
+    {
+        byte[] data = resource<byte[]>("JasmineChlora.ffsd");
+        Ver3CharInfo# charInfo = new Ver3CharInfo(); // new blank Ver3CharInfo
+        Ver3StoreData.SetFromBytes(data, charInfo); // convert StoreData to CharInfo
+
+        // TODO: serialize to bytes and compare that?
+        AssertEquals(charInfo.GetMiiVersion(), 3);
+        AssertEquals(charInfo.GetCopyable() ? 1 : 0, 0);
+        AssertEquals(charInfo.GetNgWord() ? 1 : 0, 0);
+        AssertEquals(charInfo.GetRegionMove(), 0);
+        AssertEquals(charInfo.GetFontRegion(), 0);
+        AssertEquals(charInfo.GetRoomIndex(), 0);
+        AssertEquals(charInfo.GetPositionInRoom(), 0);
+        AssertEquals(charInfo.GetAuthorType(), 0);
+        AssertEquals(charInfo.GetBirthPlatform(), 4);
+        AssertEquals(charInfo.GetGender(), 1);
+        AssertEquals(charInfo.GetBirthMonth(), 12);
+        AssertEquals(charInfo.GetBirthDay(), 10);
+        AssertEquals(charInfo.GetFavoriteColor(), 11);
+        AssertEquals(charInfo.GetFavorite() ? 1 : 0, 0);
+        AssertEquals(charInfo.GetHeight(), 28);
+        AssertEquals(charInfo.GetBuild(), 55);
+        AssertEquals(charInfo.GetLocalonly() ? 1 : 0, 0);
+        AssertEquals(charInfo.GetFaceType(), 9);
+        AssertEquals(charInfo.GetFaceColor(), 0);
+        AssertEquals(charInfo.GetFaceTex(), 0);
+        AssertEquals(charInfo.GetFaceMake(), 1);
+        AssertEquals(charInfo.GetHairType(), 123);
+        AssertEquals(charInfo.GetHairColor(), 1);
+        AssertEquals(charInfo.GetHairFlip(), 0);
+        AssertEquals(charInfo.GetEyeType(), 33);
+        AssertEquals(charInfo.GetEyeColor(), 0);
+        AssertEquals(charInfo.GetEyeScale(), 7);
+        AssertEquals(charInfo.GetEyeAspect(), 3);
+        AssertEquals(charInfo.GetEyeRotate(), 3);
+        AssertEquals(charInfo.GetEyeX(), 2);
+        AssertEquals(charInfo.GetEyeY(), 14);
+        AssertEquals(charInfo.GetEyebrowType(), 13);
+        AssertEquals(charInfo.GetEyebrowColor(), 0);
+        AssertEquals(charInfo.GetEyebrowScale(), 4);
+        AssertEquals(charInfo.GetEyebrowAspect(), 6);
+        AssertEquals(charInfo.GetEyebrowRotate(), 7);
+        AssertEquals(charInfo.GetEyebrowX(), 6);
+        AssertEquals(charInfo.GetEyebrowY(), 12);
+        AssertEquals(charInfo.GetNoseType(), 0);
+        AssertEquals(charInfo.GetNoseScale(), 0);
+        AssertEquals(charInfo.GetNoseY(), 4);
+        AssertEquals(charInfo.GetMouthType(), 30);
+        AssertEquals(charInfo.GetMouthColor(), 0);
+        AssertEquals(charInfo.GetMouthScale(), 1);
+        AssertEquals(charInfo.GetMouthAspect(), 4);
+        AssertEquals(charInfo.GetMouthY(), 13);
+        AssertEquals(charInfo.GetMustacheType(), 0);
+        AssertEquals(charInfo.GetBeardType(), 0);
+        AssertEquals(charInfo.GetBeardColor(), 6);
+        AssertEquals(charInfo.GetBeardScale(), 4);
+        AssertEquals(charInfo.GetBeardY(), 16);
+        AssertEquals(charInfo.GetGlassType(), 3);
+        AssertEquals(charInfo.GetGlassColor(), 3);
+        AssertEquals(charInfo.GetGlassScale(), 7);
+        AssertEquals(charInfo.GetGlassY(), 11);
+        AssertEquals(charInfo.GetMoleType(), 0);
+        AssertEquals(charInfo.GetMoleScale(), 1);
+        AssertEquals(charInfo.GetMoleX(), 12);
+        AssertEquals(charInfo.GetMoleY(), 27);
+
+        // CreateId
+        const byte[] expectedCreateId = { 219, 184, 135, 49, 190, 96, 43, 42, 42, 66 };
+        byte[] actualCreateId = charInfo.GetCreateId();
+        for (int i = 0; i < expectedCreateId.Length; i++)
+            AssertEquals(actualCreateId[i], expectedCreateId[i]);
+
+        // AuthorId
+        const byte[] expectedAuthorId = { 160, 65, 56, 196, 160, 132, 0, 0 };
+        byte[] actualAuthorId = charInfo.GetAuthorId();
+        for (int i = 0; i < expectedAuthorId.Length; i++)
+            AssertEquals(actualAuthorId[i], expectedAuthorId[i]);
+
+        // Name ("Jasmine" in UTF-16 + null termination)
+        const ushort[] expectedName = { 0x004A, 0x0061, 0x0073, 0x006D, 0x0069, 0x006E, 0x0065, 0x0000, 0x0000, 0x0000, 0x0000 };
+        ushort[] actualName = charInfo.GetName();
+        for (int i = 0; i < expectedName.Length; i++)
+            AssertEquals(actualName[i], expectedName[i]);
+
+        // CreatorName ("\0osigonal" in UTF-16 + null termination)
+        const ushort[] expectedCreatorName = { 0x0000, 0x006F, 0x0073, 0x0069, 0x0067, 0x006F, 0x006E, 0x0061, 0x006C, 0x0000, 0x0000 };
+        ushort[] actualCreatorName = charInfo.GetCreatorName();
+        for (int i = 0; i < expectedCreatorName.Length; i++)
+            AssertEquals(actualCreatorName[i], expectedCreatorName[i]);
+
+
+        /*
+        //charInfo = new Ver3CharInfo(); // new blank Ver3CharInfo
+        byte[]# output = new byte[96];
+        //storeData = new Ver3StoreData();
+        //storeData.SetFromCharInfo(charInfo);
+        Ver3StoreData.ToStoreDataBytes(output, charInfo);
+        Console.WriteLine($"re-encoded back into base64: {Convert.ToBase64String(output, 0, 96)}");
+        */
+    }
+    public static void Main() throws Exception
+    {
+        TestJasmineChloraDecode();
+        Console.WriteLine("test PASS!");
+    }
+}

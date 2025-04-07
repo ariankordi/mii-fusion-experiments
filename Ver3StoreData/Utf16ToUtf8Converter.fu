@@ -1,0 +1,61 @@
+public class Utf16ToUtf8Converter
+{
+    /// Converts a UTF-16 array, not necessarily null-terminated, to a UTF-8 encoded string.
+    public static string() Convert(
+        /// An array of UTF-16 code units.
+        ushort[] utf16,
+        /// How many code units to process (length of original string).
+        int length)
+    {
+        // Allocate enough room: worst case is 4 bytes per code unit
+        byte[]# buffer = new byte[length * 4];
+        int index = 0;
+        int i = 0;
+
+        while (i < length)
+        {
+            int c = utf16[i++];
+
+            // Check for surrogate pair
+            if (i < length && c >= 0xd800 && c <= 0xdbff)
+            {
+                int next = utf16[i];
+                if (next >= 0xdc00 && next <= 0xdfff)
+                {
+                    c = 0x10000 + ((c & 0x3ff) << 10) + (next & 0x3ff);
+                    i++;
+                }
+            }
+
+            // Replace unmatched surrogate with replacement char
+            if (c >= 0xd800 && c <= 0xdfff)
+                c = 0xfffd;
+
+            if (c < 0x80)
+            {
+                buffer[index++] = c;
+            }
+            else if (c < 0x800)
+            {
+                buffer[index++] = 0xc0 | (c >> 6);
+                buffer[index++] = 0x80 | (c & 0x3f);
+            }
+            else if (c < 0x10000)
+            {
+                buffer[index++] = 0xe0 | (c >> 12);
+                buffer[index++] = 0x80 | ((c >> 6) & 0x3f);
+                buffer[index++] = 0x80 | (c & 0x3f);
+            }
+            else
+            {
+                buffer[index++] = 0xf0 | (c >> 18);
+                buffer[index++] = 0x80 | ((c >> 12) & 0x3f);
+                buffer[index++] = 0x80 | ((c >> 6) & 0x3f);
+                buffer[index++] = 0x80 | (c & 0x3f);
+            }
+        }
+
+        // Convert byte array to string using UTF-8 encoding
+        return Encoding.UTF8.GetString(buffer, 0, index);
+    }
+}

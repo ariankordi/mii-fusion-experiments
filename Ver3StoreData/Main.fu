@@ -1,0 +1,21 @@
+public class Hello
+{
+    public static void Main()
+    {
+        byte[] data = resource<byte[]>("JasmineChlora.ffsd");
+        Console.WriteLine("constructing new Ver3StoreData with contents.");
+        Ver3CharInfo# charInfo = new Ver3CharInfo(); // new blank Ver3CharInfo
+        Ver3StoreData.SetFromBytes(data, charInfo); // convert StoreData to CharInfo
+        Console.WriteLine("converted to CharInfo, printing contents:");
+        charInfo.Dump(); // print contents of CharInfo
+        Console.WriteLine("converting from charinfo back to Ver3StoreData:");
+
+        //charInfo = new Ver3CharInfo(); // new blank Ver3CharInfo
+        byte[]# output = new byte[96];
+        //storeData = new Ver3StoreData();
+        //storeData.SetFromCharInfo(charInfo);
+        Ver3StoreData.ToStoreDataBytes(output, charInfo);
+        Console.WriteLine($"re-encoded back into base64: {Convert.ToBase64String(output, 0, 96)}");
+        Console.WriteLine($"name: {Utf16ToUtf8Converter.Convert(charInfo.GetName(), 10)}");
+    }
+}

@@ -1,0 +1,218 @@
+public class Ver3StoreData
+{
+    public const int Length = 96;
+
+    public static void ToStoreDataBytes(byte[]# output, Ver3CharInfo info)
+    {
+       // Clear buffer
+        for (int i = 0; i < Length; i++)
+            output[i] = 0;
+
+        ushort tmpU16;
+        output[0] = (output[0] & ~(255 << 0)) | ((info.GetMiiVersion() & 255) << 0);
+        output[1] = (output[1] & ~(1 << 0)) | ((info.GetCopyable() ? 1 : 0) << 0);
+        output[1] = (output[1] & ~(1 << 1)) | ((info.GetNgWord() ? 1 : 0) << 1);
+        output[1] = (output[1] & ~(3 << 2)) | ((info.GetRegionMove() & 3) << 2);
+        output[1] = (output[1] & ~(3 << 4)) | ((info.GetFontRegion() & 3) << 4);
+        // reserved_0: not exposed
+        output[2] = (output[2] & ~(15 << 0)) | ((info.GetRoomIndex() & 15) << 0);
+        output[2] = (output[2] & ~(15 << 4)) | ((info.GetPositionInRoom() & 15) << 4);
+        output[3] = (output[3] & ~(15 << 0)) | ((info.GetAuthorType() & 15) << 0);
+        output[3] = (output[3] & ~(7 << 4)) | ((info.GetBirthPlatform() & 7) << 4);
+        // reserved_1: not exposed
+
+        info.GetAuthorId().CopyTo(0, output, 4, 8);
+
+        info.GetCreateId().CopyTo(0, output, 12, 10);
+
+        // reserved_2[2] = already zero
+        output[24] = (output[24] & ~(1 << 0)) | ((info.GetGender() & 1) << 0);
+        output[24] = (output[24] & ~(15 << 1)) | ((info.GetBirthMonth() & 15) << 1);
+        tmpU16 = output[24] | (output[25] << 8);
+        tmpU16 = (tmpU16 & ~(31 << 5)) | ((info.GetBirthDay() & 31) << 5);
+        output[24] = tmpU16 & 0xFF;
+        output[25] = (tmpU16 >> 8) & 0xFF;
+        output[25] = (output[25] & ~(15 << 2)) | ((info.GetFavoriteColor() & 15) << 2);
+        output[25] = (output[25] & ~(1 << 6)) | ((info.GetFavorite() ? 1 : 0) << 6);
+        // padding_0 not exposed
+
+        ushort[] name = info.GetName();
+        for (int i = 0; i < 10; i++) {
+            output[26 + i * 2] = name[i];
+            output[26 + i * 2 + 1] = (name[i] >> 8);
+        }
+
+        output[46] = info.GetHeight();
+        output[47] = info.GetBuild();
+
+        output[48] = (output[48] & ~(1 << 0)) | ((info.GetLocalonly() ? 1 : 0) << 0);
+        output[48] = (output[48] & ~(15 << 1)) | ((info.GetFaceType() & 15) << 1);
+        output[48] = (output[48] & ~(7 << 5)) | ((info.GetFaceColor() & 7) << 5);
+        output[49] = (output[49] & ~(15 << 0)) | ((info.GetFaceTex() & 15) << 0);
+        output[49] = (output[49] & ~(15 << 4)) | ((info.GetFaceMake() & 15) << 4);
+        output[50] = (output[50] & ~(255 << 0)) | ((info.GetHairType() & 255) << 0);
+        output[51] = (output[51] & ~(7 << 0)) | ((info.GetHairColor() & 7) << 0);
+        output[51] = (output[51] & ~(1 << 3)) | ((info.GetHairFlip() & 1) << 3);
+        // padding_1 not exposed
+
+        output[52] = (output[52] & ~(63 << 0)) | ((info.GetEyeType() & 63) << 0);
+        tmpU16 = output[52] | (output[53] << 8);
+        tmpU16 = (tmpU16 & ~(7 << 6)) | ((info.GetEyeColor() & 7) << 6);
+        output[52] = tmpU16;
+        output[53] = (tmpU16 >> 8);
+        output[53] = (output[53] & ~(15 << 1)) | ((info.GetEyeScale() & 15) << 1);
+        output[53] = (output[53] & ~(7 << 5)) | ((info.GetEyeAspect() & 7) << 5);
+
+        output[54] = (output[54] & ~(31 << 0)) | ((info.GetEyeRotate() & 31) << 0);
+        tmpU16 = output[54] | (output[55] << 8);
+        tmpU16 = (tmpU16 & ~(15 << 5)) | ((info.GetEyeX() & 15) << 5);
+        output[54] = tmpU16;
+        output[55] = (tmpU16 >> 8);
+        output[55] = (output[55] & ~(31 << 1)) | ((info.GetEyeY() & 31) << 1);
+        // padding_2 not exposed
+
+        output[56] = (output[56] & ~(31 << 0)) | ((info.GetEyebrowType() & 31) << 0);
+        output[56] = (output[56] & ~(7 << 5)) | ((info.GetEyebrowColor() & 7) << 5);
+        output[57] = (output[57] & ~(15 << 0)) | ((info.GetEyebrowScale() & 15) << 0);
+        output[57] = (output[57] & ~(7 << 4)) | ((info.GetEyebrowAspect() & 7) << 4);
+        // padding_3 not exposed
+
+        output[58] = (output[58] & ~(31 << 0)) | ((info.GetEyebrowRotate() & 31) << 0);
+        tmpU16 = output[58] | (output[59] << 8);
+        tmpU16 = (tmpU16 & ~(15 << 5)) | ((info.GetEyebrowX() & 15) << 5);
+        output[58] = (tmpU16 & 0xFF);
+        output[59] = ((tmpU16 >> 8) & 0xFF);
+        output[59] = (output[59] & ~(31 << 1)) | ((info.GetEyebrowY() & 31) << 1);
+        // padding_4 not exposed
+
+        output[60] = (output[60] & ~(31 << 0)) | ((info.GetNoseType() & 31) << 0);
+        tmpU16 = output[60] | (output[61] << 8);
+        tmpU16 = (tmpU16 & ~(15 << 5)) | ((info.GetNoseScale() & 15) << 5);
+        output[60] = (tmpU16 & 0xFF);
+        output[61] = ((tmpU16 >> 8) & 0xFF);
+        output[61] = (output[61] & ~(31 << 1)) | ((info.GetNoseY() & 31) << 1);
+        // padding_5 not exposed
+
+        output[62] = (output[62] & ~(63 << 0)) | ((info.GetMouthType() & 63) << 0);
+        tmpU16 = output[62] | (output[63] << 8);
+        tmpU16 = (tmpU16 & ~(7 << 6)) | ((info.GetMouthColor() & 7) << 6);
+        output[62] = (tmpU16 & 0xFF);
+        output[63] = ((tmpU16 >> 8) & 0xFF);
+        output[63] = (output[63] & ~(15 << 1)) | ((info.GetMouthScale() & 15) << 1);
+        output[63] = (output[63] & ~(7 << 5)) | ((info.GetMouthAspect() & 7) << 5);
+        output[64] = (output[64] & ~(31 << 0)) | ((info.GetMouthY() & 31) << 0);
+        output[64] = (output[64] & ~(7 << 5)) | ((info.GetMustacheType() & 7) << 5);
+        // padding_6 not exposed
+
+        output[66] = (output[66] & ~(7 << 0)) | ((info.GetBeardType() & 7) << 0);
+        output[66] = (output[66] & ~(7 << 3)) | ((info.GetBeardColor() & 7) << 3);
+        tmpU16 = output[66] | (output[67] << 8);
+        tmpU16 = (tmpU16 & ~(15 << 6)) | ((info.GetBeardScale() & 15) << 6);
+        output[66] = (tmpU16 & 0xFF);
+        output[67] = ((tmpU16 >> 8) & 0xFF);
+        output[67] = (output[67] & ~(31 << 2)) | ((info.GetBeardY() & 31) << 2);
+        // padding_7 not exposed
+
+        output[68] = (output[68] & ~(15 << 0)) | ((info.GetGlassType() & 15) << 0);
+        output[68] = (output[68] & ~(7 << 4)) | ((info.GetGlassColor() & 7) << 4);
+        tmpU16 = output[68] | (output[69] << 8);
+        tmpU16 = (tmpU16 & ~(15 << 7)) | ((info.GetGlassScale() & 15) << 7);
+        output[68] = (tmpU16 & 0xFF);
+        output[69] = ((tmpU16 >> 8) & 0xFF);
+        output[69] = (output[69] & ~(31 << 3)) | ((info.GetGlassY() & 31) << 3);
+
+        output[70] = (output[70] & ~(1 << 0)) | ((info.GetMoleType() & 1) << 0);
+        output[70] = (output[70] & ~(15 << 1)) | ((info.GetMoleScale() & 15) << 1);
+        tmpU16 = output[70] | (output[71] << 8);
+        tmpU16 = (tmpU16 & ~(31 << 5)) | ((info.GetMoleX() & 31) << 5);
+        output[70] = (tmpU16 & 0xFF);
+        output[71] = ((tmpU16 >> 8) & 0xFF);
+        output[71] = (output[71] & ~(31 << 2)) | ((info.GetMoleY() & 31) << 2);
+        // padding_8 not exposed
+
+        ushort[] creatorName = info.GetCreatorName();
+        for (int i = 0; i < 10; i++) {
+            output[72 + i * 2] = (creatorName[i] & 0xFF);
+            output[72 + i * 2 + 1] = ((creatorName[i] >> 8) & 0xFF);
+        }
+
+        // pad9 not exposed
+
+        ushort crc = Crc16Ccitt.Calculate(output, 94, 0);
+        // Write CRC-16 as big-endian.
+        output[94] = crc >> 8;
+        output[95] = crc & 0xFF;
+    }
+    public static void SetFromBytes(byte[] src, Ver3CharInfo# info)
+    {
+        info.SetMiiVersion(src[0]);
+        info.SetCopyable(src[1] & 1);
+        info.SetNgWord(src[1] >> 1 & 1);
+        info.SetRegionMove((src[1] >> 2 & 3));
+        info.SetFontRegion((src[1] >> 4 & 3));
+        info.SetRoomIndex((src[2] & 0xf));
+        info.SetPositionInRoom((src[2] >> 4));
+        info.SetAuthorType((src[3] & 0xf));
+        info.SetBirthPlatform((src[3] >> 4 & 7));
+        info.SetAuthorId(src, 4);
+        info.SetCreateId(src, 0xc);
+        info.SetGender((src[0x18] & 1));
+        info.SetBirthMonth((src[0x18] >> 1 & 0xf));
+        info.SetBirthDay((src[0x19] & 3) << 3 | (src[0x18] >> 5));
+        info.SetFavoriteColor((src[0x19] >> 2 & 0xf));
+        info.SetFavorite(src[0x19] >> 6 & 1);
+        ushort[10] name;
+        for (int i = 0; i < name.Length; i++)
+            name[i] = src[26 + i * 2] | (src[26 + i * 2 + 1] >> 8);
+        info.SetName(name);
+        info.SetHeight(src[0x2e]);
+        info.SetBuild(src[0x2f]);
+        info.SetLocalonly(src[0x30] & 1);
+        info.SetFaceType((src[0x30] >> 1 & 0xf));
+        info.SetFaceColor((src[0x30] >> 5));
+        info.SetFaceTex((src[0x31] & 0xf));
+        info.SetFaceMake((src[0x31] >> 4));
+        info.SetHairType(src[0x32]);
+        info.SetHairColor((src[0x33] & 7));
+        info.SetHairFlip((src[0x33] >> 3 & 1));
+        info.SetEyeType((src[0x34] & 0x3f));
+        info.SetEyeColor((src[0x35] & 1) << 2 | (src[0x34] >> 6));
+        info.SetEyeScale((src[0x35] >> 1 & 0xf));
+        info.SetEyeAspect((src[0x35] >> 5));
+        info.SetEyeRotate((src[0x36] & 0x1f));
+        info.SetEyeX((src[0x37] & 1) << 3 | (src[0x36] >> 5));
+        info.SetEyeY((src[0x37] >> 1 & 0x1f));
+        info.SetEyebrowType((src[0x38] & 0x1f));
+        info.SetEyebrowColor((src[0x38] >> 5));
+        info.SetEyebrowScale((src[0x39] & 0xf));
+        info.SetEyebrowAspect((src[0x39] >> 4 & 7));
+        info.SetEyebrowRotate((src[0x3a] & 0x1f));
+        info.SetEyebrowX((src[0x3b] & 1) << 3 | (src[0x3a] >> 5));
+        info.SetEyebrowY((src[0x3b] >> 1 & 0x1f));
+        info.SetNoseType((src[0x3c] & 0x1f));
+        info.SetNoseScale((src[0x3d] & 1) << 3 | (src[0x3c] >> 5));
+        info.SetNoseY((src[0x3d] >> 1 & 0x1f));
+        info.SetMouthType((src[0x3e] & 0x3f));
+        info.SetMouthColor((src[0x3f] & 1) << 2 | (src[0x3e] >> 6));
+        info.SetMouthScale((src[0x3f] >> 1 & 0xf));
+        info.SetMouthAspect((src[0x3f] >> 5));
+        info.SetMouthY((src[0x40] & 0x1f));
+        info.SetMustacheType((src[0x40] >> 5));
+        info.SetBeardType((src[0x42] & 7));
+        info.SetBeardColor((src[0x42] >> 3 & 7));
+        info.SetBeardScale((src[0x43] & 3) << 2 | (src[0x42] >> 6));
+        info.SetBeardY((src[0x43] >> 2 & 0x1f));
+        info.SetGlassType((src[0x44] & 0xf));
+        info.SetGlassColor((src[0x44] >> 4 & 7));
+        info.SetGlassScale((src[0x45] & 7) * 2 | (src[0x44] >> 7));
+        info.SetGlassY((src[0x45] >> 3));
+        info.SetMoleType((src[0x46] & 1));
+        info.SetMoleScale((src[0x46] >> 1 & 0xf));
+        info.SetMoleX((src[0x47] & 3) << 3 | (src[0x46] >> 5));
+        info.SetMoleY((src[0x47] >> 2 & 0x1f));
+        ushort[10] creatorName;
+        for (int i = 0; i < creatorName.Length; i++)
+            creatorName[i] = src[72 + i * 2] | (src[72 + i * 2 + 1] >> 8);
+        info.SetCreatorName(creatorName);
+    }
+}

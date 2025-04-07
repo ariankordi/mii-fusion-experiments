@@ -1,0 +1,417 @@
+/// CharInfo for CFL/FFL, representing fields of Ver3StoreData.
+public class Ver3CharInfo
+{
+    int MiiVersion;
+
+    int FaceType;
+    int FaceColor;
+    int FaceTex;
+    int FaceMake;
+
+    int HairType;
+    int HairColor;
+    int HairFlip;
+
+    int EyeType;
+    int EyeColor;
+    int EyeScale;
+    int EyeAspect;
+    int EyeRotate;
+    int EyeX;
+    int EyeY;
+
+    int EyebrowType;
+    int EyebrowColor;
+    int EyebrowScale;
+    int EyebrowAspect;
+    int EyebrowRotate;
+    int EyebrowX;
+    int EyebrowY;
+
+    int NoseType;
+    int NoseScale;
+    int NoseY;
+
+    int MouthType;
+    int MouthColor;
+    int MouthScale;
+    int MouthAspect;
+    int MouthY;
+
+    int MustacheType;
+    int BeardType;
+    int BeardColor;
+    int BeardScale;
+    int BeardY;
+
+    int GlassType;
+    int GlassColor;
+    int GlassScale;
+    int GlassY;
+
+    int MoleType;
+    int MoleScale;
+    int MoleX;
+    int MoleY;
+
+    int Height;
+    int Build;
+
+    ushort[11] Name;
+    ushort[11] CreatorName;
+
+    int Gender;
+    int BirthMonth;
+    int BirthDay;
+    int FavoriteColor;
+    bool Favorite;
+    bool Copyable;
+    bool NgWord;
+    bool Localonly;
+    int RegionMove;
+    int FontRegion;
+    int RoomIndex;
+    int PositionInRoom;
+    int BirthPlatform;
+
+    byte[10] CreateId;
+    int AuthorType;
+    // ushort Padding0;
+    byte[8] AuthorId;
+
+    // Getters and setters for each field.
+
+    public int GetMiiVersion() => MiiVersion;
+    public void SetMiiVersion!(int value) { MiiVersion = value; }
+
+    public int GetFaceType() => FaceType;
+    public void SetFaceType!(int value) { FaceType = value; }
+
+    public int GetFaceColor() => FaceColor;
+    public void SetFaceColor!(int value) { FaceColor = value; }
+
+    public int GetFaceTex() => FaceTex;
+    public void SetFaceTex!(int value) { FaceTex = value; }
+
+    public int GetFaceMake() => FaceMake;
+    public void SetFaceMake!(int value) { FaceMake = value; }
+
+    public int GetHairType() => HairType;
+    public void SetHairType!(int value) { HairType = value; }
+
+    public int GetHairColor() => HairColor;
+    public void SetHairColor!(int value) { HairColor = value; }
+
+    public int GetHairFlip() => HairFlip;
+    public void SetHairFlip!(int value) { HairFlip = value; }
+
+    public int GetEyeType() => EyeType;
+    public void SetEyeType!(int value) { EyeType = value; }
+
+    public int GetEyeColor() => EyeColor;
+    public void SetEyeColor!(int value) { EyeColor = value; }
+
+    public int GetEyeScale() => EyeScale;
+    public void SetEyeScale!(int value) { EyeScale = value; }
+
+    public int GetEyeAspect() => EyeAspect;
+    public void SetEyeAspect!(int value) { EyeAspect = value; }
+
+    public int GetEyeRotate() => EyeRotate;
+    public void SetEyeRotate!(int value) { EyeRotate = value; }
+
+    public int GetEyeX() => EyeX;
+    public void SetEyeX!(int value) { EyeX = value; }
+
+    public int GetEyeY() => EyeY;
+    public void SetEyeY!(int value) { EyeY = value; }
+
+    public int GetEyebrowType() => EyebrowType;
+    public void SetEyebrowType!(int value) { EyebrowType = value; }
+
+    public int GetEyebrowColor() => EyebrowColor;
+    public void SetEyebrowColor!(int value) { EyebrowColor = value; }
+
+    public int GetEyebrowScale() => EyebrowScale;
+    public void SetEyebrowScale!(int value) { EyebrowScale = value; }
+
+    public int GetEyebrowAspect() => EyebrowAspect;
+    public void SetEyebrowAspect!(int value) { EyebrowAspect = value; }
+
+    public int GetEyebrowRotate() => EyebrowRotate;
+    public void SetEyebrowRotate!(int value) { EyebrowRotate = value; }
+
+    public int GetEyebrowX() => EyebrowX;
+    public void SetEyebrowX!(int value) { EyebrowX = value; }
+
+    public int GetEyebrowY() => EyebrowY;
+    public void SetEyebrowY!(int value) { EyebrowY = value; }
+
+    public int GetNoseType() => NoseType;
+    public void SetNoseType!(int value) { NoseType = value; }
+
+    public int GetNoseScale() => NoseScale;
+    public void SetNoseScale!(int value) { NoseScale = value; }
+
+    public int GetNoseY() => NoseY;
+    public void SetNoseY!(int value) { NoseY = value; }
+
+    public int GetMouthType() => MouthType;
+    public void SetMouthType!(int value) { MouthType = value; }
+
+    public int GetMouthColor() => MouthColor;
+    public void SetMouthColor!(int value) { MouthColor = value; }
+
+    public int GetMouthScale() => MouthScale;
+    public void SetMouthScale!(int value) { MouthScale = value; }
+
+    public int GetMouthAspect() => MouthAspect;
+    public void SetMouthAspect!(int value) { MouthAspect = value; }
+
+    public int GetMouthY() => MouthY;
+    public void SetMouthY!(int value) { MouthY = value; }
+
+    public int GetMustacheType() => MustacheType;
+    public void SetMustacheType!(int value) { MustacheType = value; }
+
+    public int GetBeardType() => BeardType;
+    public void SetBeardType!(int value) { BeardType = value; }
+
+    public int GetBeardColor() => BeardColor;
+    public void SetBeardColor!(int value) { BeardColor = value; }
+
+    public int GetBeardScale() => BeardScale;
+    public void SetBeardScale!(int value) { BeardScale = value; }
+
+    public int GetBeardY() => BeardY;
+    public void SetBeardY!(int value) { BeardY = value; }
+
+    public int GetGlassType() => GlassType;
+    public void SetGlassType!(int value) { GlassType = value; }
+
+    public int GetGlassColor() => GlassColor;
+    public void SetGlassColor!(int value) { GlassColor = value; }
+
+    public int GetGlassScale() => GlassScale;
+    public void SetGlassScale!(int value) { GlassScale = value; }
+
+    public int GetGlassY() => GlassY;
+    public void SetGlassY!(int value) { GlassY = value; }
+
+    public int GetMoleType() => MoleType;
+    public void SetMoleType!(int value) { MoleType = value; }
+
+    public int GetMoleScale() => MoleScale;
+    public void SetMoleScale!(int value) { MoleScale = value; }
+
+    public int GetMoleX() => MoleX;
+    public void SetMoleX!(int value) { MoleX = value; }
+
+    public int GetMoleY() => MoleY;
+    public void SetMoleY!(int value) { MoleY = value; }
+
+    public int GetHeight() => Height;
+    public void SetHeight!(int value) { Height = value; }
+
+    public int GetBuild() => Build;
+    public void SetBuild!(int value) { Build = value; }
+
+    public ushort[] GetName() => Name;
+    public void SetName!(ushort[] value, int offset = 0)
+    {
+        for (int i = 0; i < 10; i++)
+            Name[i] = value[offset + i];
+        // Always null-terminate the string.
+        Name[10] = 0;
+    }
+
+    public ushort[] GetCreatorName() => CreatorName;
+    public void SetCreatorName!(ushort[] value, int offset = 0)
+        {
+        for (int i = 0; i < 10; i++)
+            CreatorName[i] = value[offset + i];
+        CreatorName[10] = 0;
+    }
+
+    public int GetGender() => Gender;
+    public void SetGender!(int value) { Gender = value; }
+
+    public int GetBirthMonth() => BirthMonth;
+    public void SetBirthMonth!(int value) { BirthMonth = value; }
+
+    public int GetBirthDay() => BirthDay;
+    public void SetBirthDay!(int value) { BirthDay = value; }
+
+    public int GetFavoriteColor() => FavoriteColor;
+    public void SetFavoriteColor!(int value) { FavoriteColor = value; }
+
+    public bool GetFavorite() => Favorite;
+    public void SetFavorite!(int value) { Favorite = (value != 0); }
+
+    public bool GetCopyable() => Copyable;
+    public void SetCopyable!(int value) { Copyable = (value != 0); }
+
+    public bool GetNgWord() => NgWord;
+    public void SetNgWord!(int value) { NgWord = (value != 0); }
+
+    public bool GetLocalonly() => Localonly;
+    public void SetLocalonly!(int value) { Localonly = (value != 0); }
+
+    public int GetRegionMove() => RegionMove;
+    public void SetRegionMove!(int value) { RegionMove = value; }
+
+    public int GetFontRegion() => FontRegion;
+    public void SetFontRegion!(int value) { FontRegion = value; }
+
+    public int GetRoomIndex() => RoomIndex;
+    public void SetRoomIndex!(int value) { RoomIndex = value; }
+
+    public int GetPositionInRoom() => PositionInRoom;
+    public void SetPositionInRoom!(int value) { PositionInRoom = value; }
+
+    public int GetBirthPlatform() => BirthPlatform;
+    public void SetBirthPlatform!(int value) { BirthPlatform = value; }
+
+    public byte[] GetCreateId() => CreateId;
+    public void SetCreateId!(byte[] value, int offset = 0)
+    {
+        value.CopyTo(offset, CreateId, 0, CreateId.Length);
+    }
+
+    public int GetAuthorType() => AuthorType;
+    public void SetAuthorType!(int value) { AuthorType = value; }
+
+    public byte[] GetAuthorId() => AuthorId;
+    public void SetAuthorId!(byte[] value, int offset = 0)
+    {
+        value.CopyTo(offset, AuthorId, 0, AuthorId.Length);
+    }
+
+    public void IsValid()
+    {
+        if (MiiVersion <= 0)
+            Console.WriteLine("Invalid: MiiVersion must be > 0");
+        // TODO: Additional validation checks can be added here.
+    }
+
+    public void Dump()
+    {
+        Console.WriteLine("Faceline:");
+        Console.WriteLine($"  Type   = {FaceType}");
+        Console.WriteLine($"  Color  = {FaceColor}");
+        Console.WriteLine($"  Tex    = {FaceTex}");
+        Console.WriteLine($"  Make   = {FaceMake}");
+        Console.WriteLine();
+
+        Console.WriteLine("Hair:");
+        Console.WriteLine($"  Type   = {HairType}");
+        Console.WriteLine($"  Color  = {HairColor}");
+        Console.WriteLine($"  Flip   = {HairFlip}");
+        Console.WriteLine();
+
+        Console.WriteLine("Eye:");
+        Console.WriteLine($"  Type   = {EyeType}");
+        Console.WriteLine($"  Color  = {EyeColor}");
+        Console.WriteLine($"  Scale  = {EyeScale}");
+        Console.WriteLine($"  Aspect = {EyeAspect}");
+        Console.WriteLine($"  Rotate = {EyeRotate}");
+        Console.WriteLine($"  X      = {EyeX}");
+        Console.WriteLine($"  Y      = {EyeY}");
+        Console.WriteLine();
+
+        Console.WriteLine("Eyebrow:");
+        Console.WriteLine($"  Type   = {EyebrowType}");
+        Console.WriteLine($"  Color  = {EyebrowColor}");
+        Console.WriteLine($"  Scale  = {EyebrowScale}");
+        Console.WriteLine($"  Aspect = {EyebrowAspect}");
+        Console.WriteLine($"  Rotate = {EyebrowRotate}");
+        Console.WriteLine($"  X      = {EyebrowX}");
+        Console.WriteLine($"  Y      = {EyebrowY}");
+        Console.WriteLine();
+
+        Console.WriteLine("Nose:");
+        Console.WriteLine($"  Type  = {NoseType}");
+        Console.WriteLine($"  Scale = {NoseScale}");
+        Console.WriteLine($"  Y     = {NoseY}");
+        Console.WriteLine();
+
+        Console.WriteLine("Mouth:");
+        Console.WriteLine($"  Type   = {MouthType}");
+        Console.WriteLine($"  Color  = {MouthColor}");
+        Console.WriteLine($"  Scale  = {MouthScale}");
+        Console.WriteLine($"  Aspect = {MouthAspect}");
+        Console.WriteLine($"  Y      = {MouthY}");
+        Console.WriteLine();
+
+        Console.WriteLine("Beard:");
+        Console.WriteLine($"  Mustache = {MustacheType}");
+        Console.WriteLine($"  Type     = {BeardType}");
+        Console.WriteLine($"  Color    = {BeardColor}");
+        Console.WriteLine($"  Scale    = {BeardScale}");
+        Console.WriteLine($"  Y        = {BeardY}");
+        Console.WriteLine();
+
+        Console.WriteLine("Glasses:");
+        Console.WriteLine($"  Type  = {GlassType}");
+        Console.WriteLine($"  Color = {GlassColor}");
+        Console.WriteLine($"  Scale = {GlassScale}");
+        Console.WriteLine($"  Y     = {GlassY}");
+        Console.WriteLine();
+
+        Console.WriteLine("Mole:");
+        Console.WriteLine($"  Type  = {MoleType}");
+        Console.WriteLine($"  Scale = {MoleScale}");
+        Console.WriteLine($"  X     = {MoleX}");
+        Console.WriteLine($"  Y     = {MoleY}");
+        Console.WriteLine();
+
+        Console.WriteLine("Body:");
+        Console.WriteLine($"  Height = {Height}");
+        Console.WriteLine($"  Build  = {Build}");
+        Console.WriteLine();
+
+        Console.WriteLine($"Gender         = {Gender}");
+        Console.WriteLine($"Birthday       = {BirthMonth}/{BirthDay}");
+        Console.WriteLine($"FavoriteColor  = {FavoriteColor}");
+        Console.WriteLine($"Favorite       = {Favorite ? "true" : "false"}");
+        Console.WriteLine($"Copyable       = {Copyable ? "true" : "false"}");
+        Console.WriteLine($"NG Word        = {NgWord ? "true" : "false"}");
+        Console.WriteLine($"Local Only     = {Localonly ? "true" : "false"}");
+        Console.WriteLine();
+
+        Console.WriteLine($"Region Move    = {RegionMove}");
+        Console.WriteLine($"Font Region    = {FontRegion}");
+        Console.WriteLine($"Room Index     = {RoomIndex}");
+        Console.WriteLine($"Room Position  = {PositionInRoom}");
+        Console.WriteLine($"Birth Platform = {BirthPlatform}");
+        Console.WriteLine();
+
+        Console.WriteLine("Create ID:");
+        string() createIdHex = "";
+        for (int i = 0; i < CreateId.Length; i++)
+            createIdHex += $"{CreateId[i]:X2} ";
+        Console.WriteLine(createIdHex);
+
+        Console.WriteLine($"Author Type    = {AuthorType}");
+
+        Console.WriteLine("Author ID:");
+        string() authorIdHex = "";
+        for (int i = 0; i < AuthorId.Length; i++)
+            authorIdHex += $"{AuthorId[i]:X2} ";
+        Console.WriteLine(authorIdHex);
+
+        Console.WriteLine("Name (UTF-16):");
+        string() nameText = "";
+        for (int i = 0; i < Name.Length; i++)
+            nameText += $"{Name[i]:X4} ";
+        Console.WriteLine(nameText);
+
+        Console.WriteLine("Creator Name (UTF-16):");
+        string() creatorText = "";
+        for (int i = 0; i < CreatorName.Length; i++)
+            creatorText += $"{CreatorName[i]:X4} ";
+        Console.WriteLine(creatorText);
+
+    }
+
+}
