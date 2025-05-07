@@ -1,0 +1,177 @@
+/*
+native {
+    #include <glib.h>
+    typedef GArray List;
+}
+*/
+/// A tiny glTF 2.0 GLB exporter for exactly one mesh (a colored cube).
+public class GLBExporter
+{
+    // Accumulates all binary data (positions, colors, indices).
+    List<byte>() binData;
+
+    /// Constructor: allocate our binary buffer.
+    public GLBExporter()
+    {
+    }
+
+    /// Build the cube mesh and package into a GLB blob.
+    /// Returns a dynamic byte array you can write straight to disk.
+    public List<byte> Export()
+    {
+        // Offsets & lengths (bytes) of each bufferView:
+        int posOffset = 0;
+        int posLength = 8 * 3 * 4;    // 8 verts × 3 floats × 4 bytes
+        int colOffset = posLength;
+        int colLength = 8 * 3 * 4;    // same shape as positions
+        int idxOffset = colOffset + colLength;
+        int idxLength = 36 * 2;       // 12 tris × 3 indices × 2 bytes
+
+        // 2) Build the JSON chunk (inline, no external lib):
+        string() json =
+            "{" +
+              "\"asset\":{\"version\":\"2.0\"}," +
+              "\"buffers\":[{\"byteLength\":" + $"{idxOffset + idxLength}" + "}]," +
+              "\"bufferViews\":[" +
+                // positions
+                "{\"buffer\":0,\"byteOffset\":0,\"byteLength\":" + $"{posLength}" + ",\"target\":34962}," +
+                // colors
+                "{\"buffer\":0,\"byteOffset\":" + $"{colOffset}" + ",\"byteLength\":" + $"{colLength}" + ",\"target\":34962}," +
+                // indices
+                "{\"buffer\":0,\"byteOffset\":" + $"{idxOffset}" + ",\"byteLength\":" + $"{idxLength}" + ",\"target\":34963}" +
+              "]," +
+              "\"accessors\":[" +
+                // POSITION accessor
+                "{\"bufferView\":0,\"componentType\":5126,\"count\":8,\"type\":\"VEC3\"," +
+                  "\"min\":[-1.0,-1.0,-1.0],\"max\":[1.0,1.0,1.0]}," +
+                // COLOR_0 accessor
+                "{\"bufferView\":1,\"componentType\":5126,\"count\":8,\"type\":\"VEC3\"}," +
+                // indices accessor
+                "{\"bufferView\":2,\"componentType\":5123,\"count\":36,\"type\":\"SCALAR\"}" +
+              "]," +
+              "\"materials\":[{\"doubleSided\":true}]," +
+              "\"meshes\":[{\"primitives\":[{\"attributes\":{\"POSITION\":0,\"COLOR_0\":1}," +
+                "\"indices\":2,\"material\":0}]}]," +
+              "\"nodes\":[{\"mesh\":0}]," +
+              "\"scenes\":[{\"nodes\":[0]}]," +
+              "\"scene\":0" +
+            "}";
+
+
+        // Pad JSON to 4‑byte alignment
+        int jsonBytes = Encoding.UTF8.GetByteCount(json);
+        int pad        = (4 - (jsonBytes % 4)) % 4;
+        for (int i = 0; i < pad; i++)
+            json += " ";
+        jsonBytes += pad;
+
+        // 3) Assemble the final GLB:
+        List<byte># glb = new List<byte>();
+
+        // -- header (12 bytes) --
+        WriteUInt32LE(0x46546C67, glb); // 'glTF'
+        WriteUInt32LE(2,           glb); // version = 2
+        int totalLength = 12
+                        + 8 + jsonBytes        // JSON chunk header + data
+                        + 8 + binData.Count;   // BIN  chunk header + data
+        WriteUInt32LE(totalLength, glb);
+
+        // -- JSON chunk header (8 bytes) --
+        WriteUInt32LE(jsonBytes, glb);
+        WriteUInt32LE(0x4E4F534A, glb); // 'JSON' in little-endian (0x4A,0x53,0x4F,0x4E)
+
+        // -- JSON data --
+        byte[]# jsb = new byte[json.Length];
+        Encoding.UTF8.GetBytes(json, jsb, 0);
+        for (int i = 0; i < json.Length; i++)
+        {
+            glb.Add(jsb[i]);
+        }
+
+        // -- BIN chunk header (8 bytes) --
+        WriteUInt32LE(binData.Count, glb);
+        WriteUInt32LE(0x004E4942,    glb); // 'BIN\0' (0x42,0x49,0x4E,0x00)
+
+        // -- BIN data --
+        for (int i = 0; i < binData.Count; i++)
+        {
+            glb.Add(binData[i]);
+        }
+
+        return glb;
+    }
+
+    /// Append a unit‑cube mesh (8 verts, colored by position, 12 tris) to binData.
+    public void AddCubeMesh!()
+    {
+        // 8 cube corners:
+        const float[24] positions = {
+            -1,-1,-1,  1,-1,-1,   1, 1,-1,  -1, 1,-1,
+            -1,-1, 1,  1,-1, 1,   1, 1, 1,  -1, 1, 1
+        };
+
+        // write positions
+        for (int i = 0; i < 8; i++) {
+            WriteFloatLE(positions[i*3 + 0], binData);
+            WriteFloatLE(positions[i*3 + 1], binData);
+            WriteFloatLE(positions[i*3 + 2], binData);
+        }
+
+        // write colors = (pos + 1) * 0.5 → [0..1]
+        for (int i = 0; i < 8; i++) {
+            float x = (positions[i*3 + 0] + 1) * 0.5;
+            float y = (positions[i*3 + 1] + 1) * 0.5;
+            float z = (positions[i*3 + 2] + 1) * 0.5;
+            WriteFloatLE(x, binData);
+            WriteFloatLE(y, binData);
+            WriteFloatLE(z, binData);
+        }
+
+        // 12 triangles, winding CCW:
+        const ushort[36] indices = {
+             0,1,2,  2,3,0,   // ‑Z face
+             4,5,6,  6,7,4,   // +Z face
+             0,4,7,  7,3,0,   // ‑X face
+             1,5,6,  6,2,1,   // +X face
+             3,2,6,  6,7,3,   // +Y face
+             0,1,5,  5,4,0    // ‑Y face
+        };
+        foreach (ushort idx in indices)
+            WriteUInt16LE(idx, binData);
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    // Helpers: write little‑endian primitives into a byte buffer.
+    // ─────────────────────────────────────────────────────────────────
+
+    /// Bit‑cast a float to its IEEE‑754 bits.
+    public static int FloatToBits(float v) {
+        native {
+            return *(int *)&v;
+        }
+        return 0;
+    }
+
+    /// Write a 32‑bit LE integer.
+    static void WriteUInt32LE(int value, List<byte>! outBuf)
+    {
+        outBuf.Add((value       & 0xFF));
+        outBuf.Add(((value>> 8) & 0xFF));
+        outBuf.Add(((value>>16) & 0xFF));
+        outBuf.Add(((value>>24) & 0xFF));
+    }
+
+    /// Write a 16‑bit LE integer.
+    static void WriteUInt16LE(int value, List<byte>! outBuf)
+    {
+        outBuf.Add((value       & 0xFF));
+        outBuf.Add(((value >> 8)& 0xFF));
+    }
+
+    /// Write a float as little‑endian bits.
+    static void WriteFloatLE(float v, List<byte>! outBuf)
+    {
+        int bits = FloatToBits(v);
+        WriteUInt32LE(bits, outBuf);
+    }
+}
