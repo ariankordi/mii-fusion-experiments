@@ -1,0 +1,750 @@
+/*
+/// Semantics for vertex attributes supported in glTF 2.0.
+/// https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#meshes-overview
+public enum AttributeSemantic
+{
+    // Note: Position, Normal, Tangent MUST be VEC3 float.
+    Position,
+    Normal,
+    Tangent,
+    Texcoord,
+    Color,
+    // Joints,
+    // Weights,
+    /// Custom attribute name.
+    /// Will be defined as a string in the attribute type.
+    Custom,
+    End
+}
+
+/// Component/data type for accessors in glTF 2.0.
+/// https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#meshes-overview
+public enum ComponentType
+{
+    /// 8 bits, signed, two's complement.
+    SignedByte,
+    /// 8 bits, unsigned.
+    UnsignedByte,
+    /// 16 bits, signed, two's complement.
+    SignedShort,
+    /// 16 bits, unsigned.
+    UnsignedShort,
+    /// 32 bits, unsigned.
+    UnsignedInt,
+    /// 32 bits, signed, IEEE 754 floating-point.
+    Float,
+    End
+}
+
+/// Representation of one vertex attribute and its buffer.
+public class GLTFAttribute
+{
+    /// Name of the attribute.
+    AttributeSemantic semantic;
+    /// glTF component/data type.
+    ComponentType componentType;
+    /// Number of components in the attribute.
+    0 .. 4 numComponents;
+
+    // bool normalized; // ??
+
+    /// Nullable buffer for the attribute.
+    /// Should assert if this is null.
+    byte[]#? buffer;
+    /// Size of the attribute's buffer.
+    int bufferSize;
+
+    /// Optional name of custom attribute.
+    string? customAttributeName;
+
+    // TODO: Getter for semantic string or assert.
+    // TODO: Getter for component type as int.
+    // TODO: Getter that gets number of components = bufferSize / ComponentTypeToSizeTable[componentType]
+    // TODO: Getters and setters for all other fields.
+    // TODO: Assertions
+    // - numComponents < 1
+    // - 
+
+    /// Table mapping AttributeSemantic enum to glTF attribute name.
+    const string?[6] AttributeSemanticTable = // int[AttributeSemantic.End]
+    {
+        "POSITION",
+        "NORMAL",
+        "TANGENT",
+        // Below only assume one set of UVs/colors is ever needed.
+        "TEXCOORD_0",
+        "COLOR_0",
+        null // Custom: should assert if name is unset.
+    };
+
+    /// Table mapping ComponentType enum to glTF componentType.
+    const int[6] ComponentTypeTable = // int[ComponentType.End]
+    {
+        5120, // SignedByte
+        5121, // UnsignedByte
+        5122, // SignedShort
+        5123, // UnsignedShort
+        5125, // UnsignedInt
+        5126  // Float
+    };
+
+    /// Table mapping ComponentType enum to size of each component in bytes.
+    const int[6] ComponentTypeToSizeTable = // int[ComponentType.End]
+    {
+        1, // SignedByte
+        1, // UnsignedByte
+        2, // SignedShort
+        2, // UnsignedShort
+        4, // UnsignedInt
+        4  // Float
+    };
+
+    /// Table mapping number of components to glTF accessor type (not to be confused with "accessor data type").
+    const string?[5] NumComponentsTable =
+    {
+        null, // Should assert if numComponents is zero.
+        "SCALAR",
+        "VEC2",
+        "VEC3",
+        "VEC4"
+    };
+}
+
+
+public class HelloFu
+{
+    GLTFAttribute()[5] attributes;
+
+    byte[]# indexBuffer;
+    // ComponentType indexType; // Assumed to be always UnsignedShort.
+    int indexCount;
+
+	public static string GetMessage()
+	{
+		return "Hello, world!";
+	}
+}
+
+*/
+
+/// A simple single‑mesh glTF 2.0 GLB builder.
+public class GLBExporter
+{
+    // ─── Internal state ────────────────────────────────────────────────────────
+
+    // Required
+    List<float>() positions;      // 3 floats per vertex
+    List<ushort>() indices;       // u16 indices
+
+    // Optional
+    List<float>() normals;        // 3 floats per vertex
+    List<float>() texcoords;     // 2 floats per vertex
+    // List<byte>() tangents;       // 4 bytes (SNORM) per vertex
+    List<byte>() colors;         // 4 bytes (UNORM) per vertex
+    bool doubleSided = false;
+    float[6] bbox;          // minX,minY,minZ,maxX,maxY,maxZ
+    bool hasBBox = false;
+
+    // Scratch space for all binary data before packaging
+    List<byte>() binData;
+
+    public GLBExporter()
+    {
+    }
+    // ─── Setters ────────────────────────────────────────────────────────────────
+
+    /// Supply the POSITION array (3 floats per vertex).
+    public void AddPositions!(float[] arr, int count)
+    {
+        for (int i = 0; i < count; i++)
+        {
+            positions.Add(arr[i]);
+        }
+    }
+
+    /// Supply optional NORMAL (3 floats per vertex).
+    public void AddNormals!(float[] arr, int count)
+    {
+        for (int i = 0; i < count; i++)
+        {
+            normals.Add(arr[i]);
+        }
+    }
+
+    /// Supply optional TEXCOORD_0 (2 floats per vertex).
+    public void AddTexcoords!(float[] arr, int count)
+    {
+        for (int i = 0; i < count; i++)
+        {
+            texcoords.Add(arr[i]);
+        }
+    }
+
+    /// Supply optional TANGENT (4 bytes per vertex, SNORM).
+    /*
+    public void AddTangents!(byte[] arr, int count)
+    {
+        for (int i = 0; i < count; i++)
+        {
+            tangents.Add(arr[i]);
+        }
+    }
+    */
+
+    /// Supply optional COLOR_0 (4 bytes per vertex, UNORM).
+    public void AddColors!(byte[] arr, int count)
+    {
+        for (int i = 0; i < count; i++)
+        {
+            colors.Add(arr[i]);
+        }
+    }
+
+    /// Supply the index buffer (u16).
+    public void AddIndices!(ushort[] arr, int count)
+    {
+        for (int i = 0; i < count; i++)
+        {
+            indices.Add(arr[i]);
+        }
+    }
+
+    /// Optional bounding box: [minX,minY,minZ,maxX,maxY,maxZ].
+    public void SetBoundingBox!(float minX, float minY, float minZ,
+                                float maxX, float maxY, float maxZ)
+    {
+        bbox[0] = minX;
+        bbox[1] = minY;
+        bbox[2] = minZ;
+        bbox[3] = maxX;
+        bbox[4] = maxY;
+        bbox[5] = maxZ;
+        hasBBox = true;
+    }
+
+    /// Enable or disable double‑sided rendering.
+    public void SetDoubleSided!(bool v)
+    {
+        doubleSided = v;
+    }
+
+    // ─── Export ────────────────────────────────────────────────────────────────
+
+    /// Build and return the GLB as a list of bytes.
+    public List<byte> Export!()
+    {
+        // --- write binary sections in this order: pos, tex, col, idx ---
+        binData.Clear();
+
+        // positions
+        int vertCount = positions.Count / 3;
+        for (int i = 0; i < vertCount; i++)
+        {
+            WriteFloatLE(positions[i*3 + 0], binData);
+            WriteFloatLE(positions[i*3 + 1], binData);
+            WriteFloatLE(positions[i*3 + 2], binData);
+        }
+        int posOffset = 0;
+        int posLength = vertCount * 3 * 4;
+
+        // normals?
+        int nrmOffset = posLength;
+        int nrmLength = 0;
+
+        int nrmCount = normals.Count / 3;
+        for (int i = 0; i < nrmCount; i++)
+        {
+            WriteFloatLE(normals[i*3 + 0], binData);
+            WriteFloatLE(normals[i*3 + 1], binData);
+            WriteFloatLE(normals[i*3 + 2], binData);
+        }
+        nrmLength = nrmCount * 3 * 4;
+
+        // texcoords?
+        int texOffset = posLength + nrmLength;
+        int texLength = 0;
+
+        int texCount = texcoords.Count / 2;
+        for (int i = 0; i < texCount; i++)
+        {
+            WriteFloatLE(texcoords[i*2 + 0], binData);
+            WriteFloatLE(texcoords[i*2 + 1], binData);
+        }
+        texLength = texCount * 2 * 4;
+
+        // colors?
+        int colOffset = posLength + nrmLength + texLength;
+        int colLength = 0;
+
+        int colCount = colors.Count / 4;
+        for (int i = 0; i < colCount; i++)
+        {
+            // bytes are already UNORM
+            binData.Add(colors[i*4 + 0]);
+            binData.Add(colors[i*4 + 1]);
+            binData.Add(colors[i*4 + 2]);
+            binData.Add(colors[i*4 + 3]);
+        }
+        colLength = colCount * 4;
+
+        // indices
+        int idxOffset = posLength + nrmLength + texLength + colLength;
+        for (int i = 0; i < indices.Count; i++)
+            WriteUInt16LE(indices[i], binData);
+        int idxLength = indices.Count * 2;
+
+        // total binary buffer length
+        int binTotal = binData.Count;
+
+        // --- build JSON chunk separately ---
+        List<byte> json = BuildJSON(
+            posOffset, posLength,
+            nrmOffset, nrmLength,
+            texOffset, texLength,
+            colOffset, colLength,
+            idxOffset, idxLength,
+            binTotal
+        );
+
+        // --- assemble final GLB ---
+        List<byte># glb = new List<byte>();
+
+        // header
+        WriteUInt32LE(0x46546C67, glb);     // 'glTF'
+        WriteUInt32LE(2,           glb);     // version
+        int totalLen = 12 + 8 + json.Count + 8 + binTotal;
+        WriteUInt32LE(totalLen,     glb);
+
+        // JSON chunk header
+        WriteUInt32LE(json.Count,    glb);
+        WriteUInt32LE(0x4E4F534A,   glb);     // 'JSON'
+
+        // JSON data
+        for (int i = 0; i < json.Count; i++)
+        {
+            glb.Add(json[i]);
+        }
+
+        // BIN chunk header
+        WriteUInt32LE(binTotal,     glb);
+        WriteUInt32LE(0x004E4942,   glb);     // 'BIN\0'
+
+        // BIN data
+        for (int i = 0; i < binData.Count; i++)
+        {
+            glb.Add(binData[i]);
+        }
+
+        return glb;
+    }
+
+    // ─── JSON builder ─────────────────────────────────────────────────────────
+
+    /// Inline JSON for single‑mesh glTF, using the recorded offsets/lengths.
+    List<byte> BuildJSON(
+        int posOff, int posLen,
+        int nrmOff, int nrmLen,
+        int texOff, int texLen,
+        int colOff, int colLen,
+        int idxOff, int idxLen,
+        int bufLen)
+    {
+        // asset + buffer
+        string() s =
+          "{" +
+            "\"asset\":{\"version\":\"2.0\"}," +
+            "\"buffers\":[{\"byteLength\":" + $"{bufLen}" + "}]," +
+
+          // bufferViews
+            "\"bufferViews\":[";
+        // POSITION
+        s += "{\"buffer\":0,\"byteOffset\":" + $"{posOff}" + ",\"byteLength\":" + $"{posLen}" + ",\"target\":34962}";
+        // NORMAL?
+        if (nrmLen > 0)
+            s += ",{\"buffer\":0,\"byteOffset\":" + $"{nrmOff}" + ",\"byteLength\":" + $"{nrmLen}" + ",\"target\":34962}";
+        // TEXCOORD_0?
+        if (texLen > 0)
+            s += ",{\"buffer\":0,\"byteOffset\":" + $"{texOff}" + ",\"byteLength\":" + $"{texLen}" + ",\"target\":34962}";
+        // COLOR_0?
+        if (colLen > 0)
+            s += ",{\"buffer\":0,\"byteOffset\":" + $"{colOff}" + ",\"byteLength\":" + $"{colLen}" + ",\"target\":34962}";
+        // INDICES
+        s += ",{\"buffer\":0,\"byteOffset\":" + $"{idxOff}" + ",\"byteLength\":" + $"{idxLen}" + ",\"target\":34963}";
+        s += "]," +
+
+          // accessors
+            "\"accessors\":[";
+        // POSITION
+        s += "{\"bufferView\":0,\"componentType\":5126,\"count\":" + $"{positions.Count/3}" + ",\"type\":\"VEC3\"";
+        if (hasBBox)
+            s += ",\"min\":[" + $"{bbox[0]:F7},{bbox[1]:F7},{bbox[2]:F7}" + "],\"max\":[" + $"{bbox[3]:F7},{bbox[4]:F7},{bbox[5]:F7}" + "]";
+        s += "}";
+        int accIndex = 1;        // TEXCOORD_0?
+        // NORMAL?
+        if (nrmLen > 0)
+        {
+            s += ",{\"bufferView\":" + $"{accIndex}" + ",\"componentType\":5126,\"count\":" + $"{normals.Count/3}" + ",\"type\":\"VEC3\"}";
+            accIndex++;
+        }
+        if (texLen > 0)
+        {
+            s += ",{\"bufferView\":" + $"{accIndex}" + ",\"componentType\":5126,\"count\":" + $"{texcoords.Count/2}" + ",\"type\":\"VEC2\"}";
+            accIndex++;
+        }
+        // COLOR_0?
+        if (colLen > 0)
+        {
+            s += ",{\"bufferView\":" + $"{accIndex}" + ",\"componentType\":5121,\"count\":" + $"{colors.Count/4}" + ",\"type\":\"VEC4\",\"normalized\":true}";
+            accIndex++;
+        }
+        // INDICES
+        s += ",{\"bufferView\":" + $"{accIndex}" + ",\"componentType\":5123,\"count\":" + $"{indices.Count}" + ",\"type\":\"SCALAR\"}";
+        s += "]," +
+
+          // materials
+            "\"materials\":[{\"doubleSided\":" + $"{(doubleSided ? "true" : "false")}" + "}]," +
+
+          // mesh, node, scene
+            "\"meshes\":[{\"primitives\":[{\"attributes\":{";
+        s += "\"POSITION\":0";
+        int attrIndex = 1;
+
+        if (nrmLen > 0) {
+            s += ",\"NORMAL\":" + $"{attrIndex}";
+            attrIndex++;
+        }
+        if (texLen > 0) {
+            s += ",\"TEXCOORD_0\":" + $"{attrIndex}";
+            attrIndex++;
+        }
+        if (colLen > 0) {
+            s += ",\"COLOR_0\":" + $"{attrIndex}";
+            attrIndex++;
+        }
+        s += "},\"indices\":" + $"{attrIndex}" + ",\"material\":0}]}]," +
+            "\"nodes\":[{\"mesh\":0}]," +
+            "\"scenes\":[{\"nodes\":[0]}]," +
+            "\"scene\":0" +
+          "}";
+
+        byte[]# jsb = new byte[s.Length];
+        Encoding.UTF8.GetBytes(s, jsb, 0);
+        List<byte># output = new List<byte>();
+        for (int i = 0; i < s.Length; i++)
+        {
+            output.Add(jsb[i]);
+        }
+
+        // pad JSON to 4‑byte
+        int pad = (4 - (s.Length % 4)) % 4;
+        // pad with space characters (0x20)
+        for (int i = 0; i < pad; i++) output.Add(0x20);
+        return output;
+    }
+
+
+    public void AddCubeMesh!()
+    {
+        // positions: 8 corners
+        const float[24] P = {
+            -1,-1,-1,   1,-1,-1,   1, 1,-1,  -1, 1,-1,
+            -1,-1, 1,   1,-1, 1,   1, 1, 1,  -1, 1, 1
+        };
+        AddPositions(P, P.Length);
+
+        // normals: per face
+        const float[24] N = {
+             0, 0,-1,  0, 0,-1,  0, 0,-1,  0, 0,-1,
+             0, 0, 1,  0, 0, 1,  0, 0, 1,  0, 0, 1
+        };
+        AddNormals(N, N.Length);
+
+        // colors: (pos+1)*0.5 → byte UNORM
+        byte[32] C; // 8 verts × 4
+        for (int i = 0; i < 8; i++)
+        {
+            C[i*4+0] = Math.Truncate((P[i*3+0] + 1) * 127);
+            C[i*4+1] = Math.Truncate((P[i*3+1] + 1) * 127);
+            C[i*4+2] = Math.Truncate((P[i*3+2] + 1) * 127);
+            C[i*4+3] = 255;
+        }
+        AddColors(C, C.Length);
+
+        // indices: 12 triangles
+        const ushort[36] I = {
+             0,1,2, 2,3,0,
+             4,5,6, 6,7,4,
+             0,4,7, 7,3,0,
+             1,5,6, 6,2,1,
+             3,2,6, 6,7,3,
+             0,1,5, 5,4,0
+        };
+        AddIndices(I, I.Length);
+
+        // bounding box
+        SetBoundingBox(-1, -1, -1, 1, 1, 1);
+
+        // ensure back‑faces are visible
+        SetDoubleSided(true);
+    }
+
+
+    // ─── Little‑endian writers & float bit‑cast ────────────────────────────────
+
+    static void WriteUInt32LE(int v, List<byte>! buf)
+    {
+        buf.Add((v       & 0xFF));
+        buf.Add(((v >> 8)& 0xFF));
+        buf.Add(((v >>16)& 0xFF));
+        buf.Add(((v >>24)& 0xFF));
+    }
+
+    static void WriteUInt16LE(int v, List<byte>! buf)
+    {
+        buf.Add((v       & 0xFF));
+        buf.Add(((v >> 8)& 0xFF));
+    }
+
+    static void WriteFloatLE(float f, List<byte>! buf)
+    {
+        WriteUInt32LE(BitConverter.FloatToInt(f), buf);
+    }
+}
+
+#if PY
+native
+{
+    import struct;
+}
+#endif
+// Import Python struct for BitConverter.
+
+
+public static class BitConverter
+{
+    /*
+    /// Converts 10_10_10_2 SNORM to 8_8_8_8 SNORM packed into u32
+    public static uint Convert1010102To8888Snorm(uint val)
+    {
+        int r = ((val >> 20) & 0x3FF);
+        int g = ((val >> 10) & 0x3FF);
+        int b = (val & 0x3FF);
+        int a = ((val >> 30) & 0x3);
+
+        // Sign-extend 10-bit
+        if ((r & 0x200) != 0) r |= ~0x3FF;
+        if ((g & 0x200) != 0) g |= ~0x3FF;
+        if ((b & 0x200) != 0) b |= ~0x3FF;
+
+        // 10-bit SNORM to 8-bit SNORM
+        r = (r * 127) / 511;
+        g = (g * 127) / 511;
+        b = (b * 127) / 511;
+
+        // 2-bit SNORM alpha: -2..1 → 0..255
+        a = ((a + 2) * 85);
+
+        return ((a & 0xFF) << 24) | ((r & 0xFF) << 16) | ((g & 0xFF) << 8) | (b & 0xFF);
+    }
+    */
+
+    /// Converts packed 10_10_10_2 SNORM (signed normalized) to float[3]
+    public static void Convert1010102ToFloat(uint packed, float[]! outVec, int offset)
+    {
+        // Extract each 10-bit component, sign-extended
+        int nx = (packed << 22) >> 22;
+        int ny = (packed << 12) >> 22;
+        int nz = (packed << 2)  >> 22;
+        // int nw = (packed >> 30) & 0x03; // The 2-bit w component, not used for normals
+
+        // Convert to float in range [-1, 1]
+        outVec[offset * 3 + 0] = nx / 511.0;
+        outVec[offset * 3 + 1] = ny / 511.0;
+        outVec[offset * 3 + 2] = nz / 511.0;
+    }
+
+    /// Converts packed 8_8_8_8 SNORM (signed normalized) to float[4]
+    public static void Convert8888SnormToFloat(uint packed, float[]! outVec)
+    {
+        int r = ((packed >> 16) & 0xFF);
+        int g = ((packed >> 8) & 0xFF);
+        int b = (packed & 0xFF);
+        int a = ((packed >> 24) & 0xFF);
+
+        // Convert to signed 8-bit
+        if (r > 127) r -= 256;
+        if (g > 127) g -= 256;
+        if (b > 127) b -= 256;
+        if (a > 127) a -= 256;
+
+        // SNORM conversion: -128..127 → -1..1
+        outVec[0] = r / 127.0;
+        outVec[1] = g / 127.0;
+        outVec[2] = b / 127.0;
+        outVec[3] = a / 127.0;
+    }
+
+    /// Converts 16-bit half-float to 32-bit float (IEEE754)
+    public static float HalfToFloat(ushort half)
+    {
+        uint sign = (half >> 15) & 0x1;
+        uint exp = (half >> 10) & 0x1F;
+        uint mant = half & 0x3FF;
+        uint f;
+
+        if (exp == 0)
+        {
+            if (mant == 0)
+            {
+                f = sign << 31; // Zero
+            }
+            else
+            {
+                // Subnormal half-float
+                exp = 1;
+                while ((mant & 0x400) == 0)
+                {
+                    mant <<= 1;
+                    exp--;
+                }
+                mant &= 0x3FF;
+                exp += 127 - 15;
+                f = (sign << 31) | (exp << 23) | (mant << 13);
+            }
+        }
+        else if (exp == 31)
+        {
+            // Inf or NaN
+            f = (sign << 31) | 0x7F800000 | (mant << 13);
+        }
+        else
+        {
+            int add = 127 - 15;
+            exp = exp + add;
+            f = (sign << 31) | (exp << 23) | (mant << 13);
+        }
+
+        return UIntToFloat(f);
+    }
+
+    /// Convert 32-bit unsigned integer to floating point.
+    /// As of 3.2.10, Fusion does not include any method to
+    /// convert bits to float, so native implementations are provided
+    /// along with a generic slow and terrible but functional fallback.
+    public static float UIntToFloat(uint bits)
+    {
+#if C || CPP
+        native { return *(float *)&bits; }
+        // Return dummy for Fusion interpreter.
+        return 0.0;
+#elif JS || TS
+        native
+        {
+            // Not ideal: place into new ArrayBuffer.
+            const arr = new Uint32Array([bits]);
+            // Get DataView and read back as float.
+            return new DataView(arr.buffer)
+                .getFloat32(0, true);
+        }
+        return 0.0;
+#elif PY
+        native
+        {
+            // Pack into 4 bytes little‑endian, then unpack as float.
+            packed = struct.pack("<I", bits)
+            (value,) = struct.unpack("<f", packed)
+            return value
+        }
+        return 0.0;
+#elif CS
+        native
+        {
+            // BitConverter expects int.
+            int asInt = unchecked((int)bits);
+            return BitConverter.Int32BitsToSingle(asInt);
+        }
+        return 0.0;
+#elif JAVA
+        native
+        {
+            return Float.intBitsToFloat(bits);
+        }
+        return 0.0;
+#else
+        // Parse sign.
+        bool sign = (bits & 0x80000000) != 0;
+
+        // Parse 8 bit exponent, biased by 127.
+        int exp = ((bits >> 23) & 0xFF);
+
+        // Parse 23-bit fraction/mantissa.
+        uint frac = bits & 0x7FFFFF;
+
+        float mantissa;
+        float value;
+
+        if (exp == 0)
+        {
+            // — Subnormal or zero
+            if (frac == 0)
+            {
+                // +- 0
+                return sign ? -0.0 : 0.0;
+            }
+            mantissa = frac / Math.Pow(2.0, 23);      // no implicit leading 1
+            value    = Math.Pow(2.0, -126) * mantissa;
+        }
+        else if (exp == 255)
+        {
+            // — Inf or NaN
+            if (frac != 0) 
+                return Math.NaN;
+            return sign ? Math.NegativeInfinity : Math.PositiveInfinity;
+        }
+        else
+        {
+            // — Normalized
+            mantissa = 1.0 + (frac / Math.Pow(2.0, 23)); 
+            value    = mantissa * Math.Pow(2.0, exp - 127);
+        }
+
+        // Apply sign bit.
+        return sign ? (-value) : value;
+#endif
+    }
+
+    public static int FloatToInt(float v) {
+#if C || CPP
+        native { return *(int *)&v; }
+        return 0;
+#elif JS || TS
+        // JavaScript/TypeScript: DataView on an ArrayBuffer (little-endian)
+        native {
+            const arr = new Float32Array([v]);
+            return new DataView(arr.buffer).getUint32(0, true);
+        }
+        return 0;
+#elif PY
+        // Python: struct.pack/unpack
+        native {
+            // '<f' = little-endian float; '<I' = little-endian uint32
+            return struct.unpack("<I", struct.pack("<f", value))[0];
+        }
+        return 0;
+#elif CS
+        native {
+            return System.BitConverter.ToUInt32(System.BitConverter.GetBytes(value), 0);
+        }
+        return 0;
+#elif JAVA
+        // Java: Float.floatToIntBits returns signed int, but bit-pattern is identical
+        native {
+            return Float.floatToIntBits(value);
+        }
+        return 0;
+#else
+        assert "Not implemented for pure Fusion.";
+#endif
+    }
+
+}

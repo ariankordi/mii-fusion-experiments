@@ -1,0 +1,164 @@
+public static class KTX1Header
+{
+	/// Total header size including required 4-byte metadata size field (even if zero)
+    public const int HeaderSize = 68;
+
+    /// Writes a KTX1 header to the buffer at the specified offset.
+    public static void WriteHeader(
+        byte[]! buffer,
+        int offset,
+        int width,
+        int height,
+        int glInternalFormat,
+        int glFormat,
+        int glType)
+    {
+        // KTX file identifier: 0xAB4B545820313031 (ASCII «KTX 10», LF, CRLF)
+        const byte[] magic = {
+            0xAB, 'K', 'T', 'X', ' ', '1', '1', 0xBB,
+            0x0D, 0x0A, 0x1A, 0x0A
+        };
+        for (int i = 0; i < 12; i++)
+            buffer[offset + i] = magic[i];
+
+        WriteUInt32LE(buffer, offset + 12, 0x04030201);      // endianness
+        WriteUInt32LE(buffer, offset + 16, glType);          // glType
+        WriteUInt32LE(buffer, offset + 20, glType == 0 ? 1 : GetTypeSize(glType)); // glTypeSize
+        WriteUInt32LE(buffer, offset + 24, glFormat);        // glFormat
+        WriteUInt32LE(buffer, offset + 28, glInternalFormat);// glInternalFormat
+        WriteUInt32LE(buffer, offset + 32, glFormat);        // baseInternalFormat
+
+        WriteUInt32LE(buffer, offset + 36, width);           // pixelWidth
+        WriteUInt32LE(buffer, offset + 40, height);          // pixelHeight
+        WriteUInt32LE(buffer, offset + 44, 0);               // pixelDepth
+        WriteUInt32LE(buffer, offset + 48, 0);               // arrayElements
+        WriteUInt32LE(buffer, offset + 52, 1);               // faces
+        WriteUInt32LE(buffer, offset + 56, 1);               // mipLevels
+        WriteUInt32LE(buffer, offset + 60, 0);               // keyValueDataBytes
+		WriteUInt32LE(buffer, offset + 64, 0);               // Alignment
+    }
+
+    /// Writes a 32-bit unsigned integer to buffer in little-endian order.
+    public static void WriteUInt32LE(byte[]! buffer, int offset, int value)
+    {
+        buffer[offset + 0] = value & 0xFF;
+        buffer[offset + 1] = value >> 8 & 0xFF;
+        buffer[offset + 2] = value >> 16 & 0xFF;
+        buffer[offset + 3] = value >> 24 & 0xFF;
+    }
+
+    /// Returns the byte size of the given GL type.
+    public static int GetTypeSize(int glType)
+    {
+        switch (glType) {
+        case 0x1401: return 1; // GL_UNSIGNED_BYTE
+        case 0x1406: return 4; // GL_FLOAT
+        case 0x140B: return 2; // GL_HALF_FLOAT
+        case 0x1403: return 2; // GL_UNSIGNED_SHORT
+        default: return 1;
+        }
+    }
+}
+
+
+
+/// Writes a basic KTX2 header (88 bytes) into a byte buffer.
+public static class KTX2Header
+{
+    /// KTX2 header size in bytes (identifier + all header fields).
+    public const int HeaderSize = 88;
+
+    /// KTX2 file identifier (12 bytes): “«KTX 22»\r\n\x1A\n”
+    const byte[] magic = {
+        0xAB, 'K', 'T', 'X', ' ', '2', '0', 0xBB,
+        0x0D, 0x0A, 0x1A, 0x0A
+    };
+
+    /// Writes an 88-byte KTX2 header at `buffer[offset]`.
+    ///
+    /// @param buffer           Writable byte buffer.
+    /// @param offset           Start index to write header.
+    /// @param vkFormat         Vulkan format enum (e.g. 37 for VK_FORMAT_R8G8B8A8_UNORM).
+    /// @param typeSize         Bytes per channel (1 for UNORM8, 4 for FLOAT32, etc.).
+    /// @param pixelWidth       Width in pixels.
+    /// @param pixelHeight      Height in pixels (0 for 1D).
+    /// @param pixelDepth       Depth in pixels (0 for 2D).
+    /// @param layerCount       Array layers (1 if not an array texture).
+    /// @param faceCount        Cube faces (6 for cube, 1 otherwise).
+    /// @param levelCount       Number of mip levels.
+    /// @param supercompressionScheme 0 = none.
+    public static void WriteHeader(
+        byte[]! buffer,
+        int offset,
+        int vkFormat,
+        int typeSize,
+        int pixelWidth,
+        int pixelHeight,
+        int pixelDepth,
+        int layerCount,
+        int faceCount,
+        int levelCount,
+        int supercompressionScheme = 0)
+    {
+        // 1) magic
+        for (int i = 0; i < 12; i++)
+            buffer[offset + i] = magic[i];
+
+        // 2) basic header fields (all little-endian uint32 or uint64)
+        int p = offset + 12;
+        WriteUInt32LE(buffer, p, vkFormat);                 // vkFormat
+        p += 4;
+        WriteUInt32LE(buffer, p, typeSize);            // typeSize
+        p += 4;
+        WriteUInt32LE(buffer, p, pixelWidth);          // pixelWidth
+        p += 4;
+        WriteUInt32LE(buffer, p, pixelHeight);         // pixelHeight
+        p += 4;
+        WriteUInt32LE(buffer, p, pixelDepth);          // pixelDepth
+        p += 4;
+        WriteUInt32LE(buffer, p, layerCount);          // layerCount
+        p += 4;
+        WriteUInt32LE(buffer, p, faceCount);           // faceCount
+        p += 4;
+        WriteUInt32LE(buffer, p, levelCount);          // levelCount
+        p += 4;
+        WriteUInt32LE(buffer, p, supercompressionScheme);// supercompressionScheme
+        p += 4;
+
+        // 3) Data Format Descriptor (DFD) block: offset & length
+        //    zero = none (you'll fill in a real DFD later)
+        WriteUInt64LE(buffer, p, HeaderSize);          // dfdByteOffset
+        p += 4;
+        WriteUInt32LE(buffer, p, 0);                   // dfdByteLength
+        p += 8;
+
+        // 4) Key/Value Data (KVD) block: offset & length
+        WriteUInt64LE(buffer, p, HeaderSize);          // kvdByteOffset
+        p += 4;
+        WriteUInt32LE(buffer, p, 0);                   // kvdByteLength
+        p += 8;
+
+        // 5) Supercompression Global Data (SGD) block: offset & length
+        WriteUInt64LE(buffer, p, 0);                   // sgdByteOffset
+        p += 4;
+        WriteUInt64LE(buffer, p, 0);                   // sgdByteLength
+        p += 8;
+        WriteUInt64LE(buffer, p, 0); // padding
+    }
+
+    /// Writes a 32-bit little-endian value into `buffer[offset..offset+3]`.
+    public static void WriteUInt32LE(byte[]! buffer, int offset, int value)
+    {
+        buffer[offset + 0] =  (value        & 0xFF);
+        buffer[offset + 1] =  ((value >> 8) & 0xFF);
+        buffer[offset + 2] =  ((value >> 16)& 0xFF);
+        buffer[offset + 3] =  ((value >> 24)& 0xFF);
+    }
+
+    /// Writes a 64-bit little-endian value into `buffer[offset..offset+7]`.
+    public static void WriteUInt64LE(byte[]! buffer, int offset, long value)
+    {
+        WriteUInt32LE(buffer, offset + 0, ( value        & 0xFFFFFFFF));
+        WriteUInt32LE(buffer, offset + 4, ((value >> 32)& 0xFFFFFFFF));
+    }
+}

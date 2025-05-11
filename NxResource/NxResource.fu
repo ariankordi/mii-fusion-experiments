@@ -1,0 +1,1202 @@
+/// Little helper to pull LE primitives out of a byte[] without repeating code.
+public class BinaryReader
+{
+    byte[] data;
+    int index;
+
+    /// Explicitly set index.
+    public void SetIndex!(int i) { index = i; }
+
+    /// Start at offset 0.
+    public void SetData!(byte[] bytes)
+    {
+        data = bytes;
+        index = 0;
+    }
+
+    /// Reads a 32‑bit uint (little‑endian) and advances the cursor.
+    public uint ReadUInt32LE!()
+    {
+        // TODO: Undefined behavior sanitizer does not like these operations on ints.
+#if C || CPP
+        native
+        {
+            unsigned int b0 = self->data[self->index + 0];
+            unsigned int b1 = self->data[self->index + 1];
+            unsigned int b2 = self->data[self->index + 2];
+            unsigned int b3 = self->data[self->index + 3];
+            self->index += 4;
+            return b0 | (b1 << 8) | (b2 << 16) | (b3 << 24);
+        }
+        return 0;
+#else
+        uint b0 = data[index + 0];
+        uint b1 = data[index + 1];
+        uint b2 = data[index + 2];
+        uint b3 = data[index + 3];
+        index += 4;
+        return b0 | (b1 << 8) | (b2 << 16) | (b3 << 24);
+#endif
+    }
+    
+    /// Reads a 32-bit IEEE 754 floating-point number.
+    public float ReadFloat!()
+    {
+        uint raw = ReadUInt32LE();
+        return BitConverter.UIntToFloat(raw);
+    }
+
+    /// Reads a 16‑bit ushort (little‑endian).
+    public ushort ReadUInt16LE!()
+    {
+        ushort b0 = data[index + 0];
+        ushort b1 = data[index + 1];
+        index += 2;
+        return b0 | (b1 << 8);
+    }
+
+    /// Reads a single byte.
+    public byte ReadByte!()
+    {
+        return data[index++];
+    }
+
+    /// Just skip forward N bytes.
+    public void Skip!(int count)
+    {
+        index += count;
+    }
+}
+
+// Beginning of resource types.
+
+// Replacements made:
+// uint32_t = uint
+// uint16_t = ushort
+// uint8_t = byte
+
+// mii_DrawParam.h
+
+public enum AttributeType
+{
+    /// Vertex positions. Format: AttributeFormat_16_16_16_16_Float, name: _p0
+    Position=0,
+    /// Vertex normals. Format: AttributeFormat_10_10_10_2_Snorm, name: _n0
+    Normal=1,
+    /// Texture coordinates. Format: AttributeFormat_16_16_Float, name: _u0
+    Uv=2,
+    /// Tangents. Format: AttributeFormat_8_8_8_8_Snorm, name: _t0
+    Tangent=3,
+    /// Vertex colors/anisotropic specular parameters. Format: AttributeFormat_8_8_8_8_Unorm, name: _c0
+    Param=4,
+    End=5
+}
+
+// mii_ResourceCommonHeader.h
+
+enum ResourceMemoryLevel
+{
+    _1=1,
+    Min=1,
+    _2=2,
+    _3=3,
+    _4=4,
+    _5=5,
+    _6=6,
+    _7=7,
+    _8=8,
+    Default=8,
+    _9=9,
+    Max=9
+}
+
+enum ResourceCompressLevel
+{
+    _0=0,   // Z_NO_COMPRESSION
+    Min=0,
+    _1=1,   // Z_BEST_SPEED
+    _2=2,
+    _3=3,
+    _4=4,
+    _5=5,
+    _6=6,
+    Default=6,
+    _7=7,
+    _8=8,
+    _9=9,   // Z_BEST_COMPRESSION
+    Max=9
+}
+
+public class ResourceCommonAttribute
+{
+    public const int Size = 0x10;
+
+    // Same size as FFLiResourcePartsInfo, identical up to compressLevel.
+    uint offset;
+    uint size;
+    uint compressedSize;
+    // NOTE: It appears that Fusion writes these fields as int even in C.
+    byte compressLevel; // ResourceCompressLevel
+    // FFLiResourcePartsInfo: u8 windowBits; // FFLiResourceWindowBits
+    byte memoryLevel;   // Verified but unused.
+    // FFLiResourcePartsInfo: u8 strategy;   // FFLiResourceStrategy
+    // byte[2] pad;     // Unused padding for alignment.
+
+    public uint GetOffset()             => offset;
+    public void SetOffset!(uint v)      { offset = v; }
+
+    public uint GetSize()               => size;
+    public void SetSize!(uint v)        { size = v; }
+
+    public uint GetCompressedSize()     => compressedSize;
+    public void SetCompressedSize!(uint v) { compressedSize = v; }
+
+    public byte GetCompressLevel()      => compressLevel;
+    public void SetCompressLevel!(byte v) { compressLevel = v; }
+
+    public byte GetMemoryLevel()        => memoryLevel;
+    public void SetMemoryLevel!(byte v) { memoryLevel = v; }
+
+    public void FromBytes!(BinaryReader! reader)
+    {
+        offset          = reader.ReadUInt32LE();
+        size            = reader.ReadUInt32LE();
+        compressedSize  = reader.ReadUInt32LE();
+        compressLevel   = reader.ReadByte();
+        memoryLevel     = reader.ReadByte();
+        reader.Skip(2); // padding
+    }
+
+    public bool IsValid()
+    {
+        // Valid if size == 0.
+        if (size == 0)
+            return true;
+
+        if (compressedSize != 0 && compressLevel < 10)
+            return (memoryLevel - 1) < ResourceMemoryLevel.Max.ToInt();
+
+        return false;
+    }
+}
+
+// mii_ResourceTextureHeader.h
+// TODO
+/*
+// ResourceTextureHeader.IsValid(int size)
+public bool IsValid(int size)
+{
+        return signature == 0x5254464E  // "NFTR"
+            && version   == 1
+            && fileSize  == rawSize;
+}
+
+// ResourceTextureAttribute.IsValid()
+public bool IsValid()
+{
+        return alignment != 0
+            && format   < ResourceTextureFormat.End
+            && width    != 0
+            && height   != 0
+            && mipCount != 0
+            && tileMode < ResourceTileMode.End;
+}
+*/
+
+// mii_ResourceShapeHeader.h
+
+public enum ResourceShapeType
+{
+    Beard=0,
+    Faceline=1,
+    Mask=2,
+    HatForNormal=3,
+    HatForHeadWear=4,
+    ForeheadForNormal=5,
+    ForeheadForHeadWear=6,
+    HairForNormal=7,
+    HairForHeadWear=8,
+    Glass=9,
+    Nose=10,
+    Noseline=11,
+    End=12
+}
+
+public class ResourceShapeAttribute
+{
+    public const int Size = 0x48;
+
+    uint[5] attributeOffset; // AttributeType_End
+    uint[5] attributeSize;   // AttributeType_End
+    uint indexOffset;        // IndexFormat_Uint16
+    uint indexSize;
+    float[2][3] bounding;    // struct BoundingBox
+
+    public uint GetAttributeOffset(AttributeType type) => attributeOffset[type.ToInt()];
+    public void SetAttributeOffset!(AttributeType type, uint v)  { attributeOffset[type.ToInt()] = v; }
+
+    public uint GetAttributeSize(AttributeType type)   => attributeSize[type.ToInt()];
+    public void SetAttributeSize!(AttributeType type, uint v)    { attributeSize[type.ToInt()] = v; }
+
+    public uint GetIndexOffset()                   => indexOffset;
+    public void SetIndexOffset!(uint v)             { indexOffset = v; }
+
+    public uint GetIndexSize()                     => indexSize;
+    public void SetIndexSize!(uint v)               { indexSize = v; }
+
+    // public float[2][3] GetBoundingBox() => bounding;
+    public float[] GetBoundingMin() => bounding[0];
+    public float[] GetBoundingMax() => bounding[1];
+
+    public void FromBytes!(BinaryReader! reader)
+    {
+        for (int i = 0; i < attributeOffset.Length; i++)
+            attributeOffset[i] = reader.ReadUInt32LE();
+        for (int i = 0; i < attributeSize.Length; i++)
+            attributeSize[i] = reader.ReadUInt32LE();
+
+        indexOffset = reader.ReadUInt32LE();
+        indexSize = reader.ReadUInt32LE();
+
+         for (int axis = 0; axis < 2; axis++)
+             for (int side = 0; side < 3; side++)
+                 bounding[axis][side] = reader.ReadFloat();
+    }
+
+    public bool IsValid(int rawSize)
+    {
+        int validCount = 0;
+
+        // check each attributeSize[i]
+        for (int i = 0; i < AttributeType.End.ToInt(); i++)
+        {
+            if (attributeSize[i] != 0)
+            {
+                int offset = attributeOffset[i];
+                int size = attributeSize[i];
+                if (rawSize < offset + size)
+                    return false;
+                validCount++;
+            }
+        }
+
+        // indexSize must be non-zero
+        if (indexSize == 0)
+            return false;
+
+        // indexOffset+indexSize must fit, and at least one attr present
+        int offset = indexOffset;
+        int size = indexSize;
+        return (offset + size <= rawSize)
+            && (validCount > 0);
+        
+    }
+
+    public bool IsValidAttribute(AttributeType type)
+    {
+        assert type < AttributeType.End;
+        return attributeSize[type.ToInt()] != 0;
+    }
+
+}
+
+/// The parameters for transforming headwear for each hair shape.
+public class ResourceShapeHairTransform
+{
+    public const int Size = 0x48;
+
+    float[3] frontTranslate;
+    float[3] frontRotate;
+    float[3] sideTranslate;
+    float[3] sideRotate;
+    float[3] topTranslate;
+    float[3] topRotate;
+
+    public void FromBytes!(BinaryReader! reader)
+    {
+        for (int i = 0; i < 3; i++) frontTranslate[i] = reader.ReadFloat();
+        for (int i = 0; i < 3; i++) frontRotate[i]    = reader.ReadFloat();
+        for (int i = 0; i < 3; i++) sideTranslate[i]  = reader.ReadFloat();
+        for (int i = 0; i < 3; i++) sideRotate[i]     = reader.ReadFloat();
+        for (int i = 0; i < 3; i++) topTranslate[i]   = reader.ReadFloat();
+        for (int i = 0; i < 3; i++) topRotate[i]      = reader.ReadFloat();
+    }
+}
+
+/// The parameters for transforming face shapes for each faceline.
+public class ResourceShapeFacelineTransform
+{
+    public const int Size = 0x24;
+
+    float[3] hairTranslate;
+    float[3] noseTranslate;
+    float[3] beardTranslate;
+
+    public void FromBytes!(BinaryReader! reader)
+    {
+        for (int i = 0; i < 3; i++) hairTranslate[i]  = reader.ReadFloat();
+        for (int i = 0; i < 3; i++) noseTranslate[i]  = reader.ReadFloat();
+        for (int i = 0; i < 3; i++) beardTranslate[i] = reader.ReadFloat();
+    }
+}
+
+/// The element for each shape in the resource header.
+/// Originally called "Element" in nn::mii::detail::ResourceShapeHeader namespace.
+public class ShapeElement
+{
+    public const int Size = 0x58;
+
+    ResourceCommonAttribute() common;
+    ResourceShapeAttribute() shape;
+
+    public ResourceCommonAttribute GetCommon()       => common;
+
+    public ResourceShapeAttribute GetShape()         => shape;
+
+    public void FromBytes!(BinaryReader! reader)
+    {
+        common.FromBytes(reader);
+        shape.FromBytes(reader);
+    }
+}
+
+/// The header for the Face Library shape resource file on NX.
+public class ResourceShapeHeader
+{
+    public const int Size = 0x14dd4;
+
+    uint signature;                     // 0x5253464E / "NFSR"
+    uint version;                       // 1
+    uint fileSize;                      // Includes size of header.
+    uint[12] maxSize;                   // ResourceShapeType_End
+    uint[12] maxAlignment;              // Always 4
+    ShapeElement()[4] beard;            // BeardType_ShapeCount
+    ShapeElement()[12] faceline;        // FacelineType_End
+    ShapeElement()[12] mask;            // FacelineType_End
+    ShapeElement()[132] hatNormal;      // HairType_End
+    ShapeElement()[132] hatCap;         // HairType_End
+    ShapeElement()[132] foreheadNormal; // HairType_End
+    ShapeElement()[132] foreheadCap;    // HairType_End
+    ShapeElement()[132] hairNormal;     // HairType_End
+    ShapeElement()[132] hairCap;        // HairType_End
+    ShapeElement()[1] glass;
+    ShapeElement()[18] nose;            // NoseType_End
+    ShapeElement()[18] noseline;        // NoseType_End
+    ResourceShapeHairTransform()[132] hairTransform;        // HairType_End
+    ResourceShapeFacelineTransform()[12] facelineTransform; // FacelineType_End
+
+    // —— Getters / Setters ——
+    // public void Init();
+    // bool IsValid(ulong size);
+    public void SetSizeAndAlignment!(ResourceShapeType type, uint size, uint alignment)
+    {
+        maxSize[type.ToInt()] = size;
+        maxAlignment[type.ToInt()] = alignment;
+    }
+    public uint GetMaxSize(ResourceShapeType type)      => maxSize[type.ToInt()];
+    public uint GetMaxAlignment(ResourceShapeType type) => maxAlignment[type.ToInt()];
+
+    public uint GetSignature()        => signature;
+    public void SetSignature!(uint v) { signature = v; }
+
+    public uint GetVersion()          => version;
+    public void SetVersion!(uint v)   { version = v; }
+
+    public uint GetFileSize()         => fileSize;
+    public void SetFileSize!(uint v)  { fileSize = v; }
+
+    /// Parse a ResourceShapeHeader from raw bytes.
+    /// Bounding boxes & hair/faceline transforms are just skipped.
+    public void FromBytes!(byte[] data)
+    {
+        BinaryReader() reader;
+
+        reader.SetData(data);
+
+        // Header scalars.
+        signature = reader.ReadUInt32LE();
+        version   = reader.ReadUInt32LE();
+        fileSize  = reader.ReadUInt32LE();
+        // Arrays.
+        for (int i = 0; i < maxSize.Length; i++)
+            maxSize[i] = reader.ReadUInt32LE();
+        for (int i = 0; i < maxAlignment.Length; i++)
+            maxAlignment[i] = reader.ReadUInt32LE();
+        // Set elements.
+        SetElementFromReader(reader, beard, beard.Length);
+        SetElementFromReader(reader, faceline, faceline.Length);
+        SetElementFromReader(reader, mask, mask.Length);
+        SetElementFromReader(reader, hatNormal, hatNormal.Length);
+        SetElementFromReader(reader, hatCap, hatCap.Length);
+        SetElementFromReader(reader, foreheadNormal, foreheadNormal.Length);
+        SetElementFromReader(reader, foreheadCap, foreheadCap.Length);
+        SetElementFromReader(reader, hairNormal, hairNormal.Length);
+        SetElementFromReader(reader, hairCap, hairCap.Length);
+        SetElementFromReader(reader, glass, glass.Length);
+        SetElementFromReader(reader, nose, nose.Length);
+        SetElementFromReader(reader, noseline, noseline.Length);
+        // Set hair and faceline transform arrays.
+        for (int i = 0; i < hairTransform.Length; i++)
+            hairTransform[i].FromBytes(reader);
+        for (int i = 0; i < facelineTransform.Length; i++)
+            facelineTransform[i].FromBytes(reader);
+    }
+
+    void SetElementFromReader!(BinaryReader! reader, ShapeElement()[]! elements, int length)
+    {
+        for (int i = 0; i < length; i++)
+            elements[i].FromBytes(reader);
+    }
+
+    public ShapeElement() GetElement(ResourceShapeType shapeType, int resourceIndex)
+    {
+        assert resourceIndex < GetElementCount(shapeType);
+
+        switch (shapeType)
+        {
+            case ResourceShapeType.Beard:
+                return beard[resourceIndex];
+            case ResourceShapeType.Faceline:
+                return faceline[resourceIndex];
+            case ResourceShapeType.Mask:
+                return mask[resourceIndex];
+            case ResourceShapeType.HatForNormal:
+                return hatNormal[resourceIndex];
+            case ResourceShapeType.HatForHeadWear:
+                return hatCap[resourceIndex];
+            case ResourceShapeType.ForeheadForNormal:
+                return foreheadNormal[resourceIndex];
+            case ResourceShapeType.ForeheadForHeadWear:
+                return foreheadCap[resourceIndex];
+            case ResourceShapeType.HairForNormal:
+                return hairNormal[resourceIndex];
+            case ResourceShapeType.HairForHeadWear:
+                return hairCap[resourceIndex];
+            case ResourceShapeType.Glass:
+                return glass[resourceIndex];
+            case ResourceShapeType.Nose:
+                return nose[resourceIndex];
+            case ResourceShapeType.Noseline:
+                return noseline[resourceIndex];
+            default:
+                assert false;
+        }
+    }
+
+    public int GetElementCount(ResourceShapeType type)
+    {
+        assert type < ResourceShapeType.End;
+
+        switch (type)
+        {
+            case ResourceShapeType.Beard:
+                return beard.Length;
+            case ResourceShapeType.Faceline:
+                return faceline.Length;
+            case ResourceShapeType.Mask:
+                return mask.Length;
+            case ResourceShapeType.HatForNormal:
+                return hatNormal.Length;
+            case ResourceShapeType.HatForHeadWear:
+                return hatCap.Length;
+            case ResourceShapeType.ForeheadForNormal:
+                return foreheadNormal.Length;
+            case ResourceShapeType.ForeheadForHeadWear:
+                return foreheadCap.Length;
+            case ResourceShapeType.HairForNormal:
+                return hairNormal.Length;
+            case ResourceShapeType.HairForHeadWear:
+                return hairCap.Length;
+            case ResourceShapeType.Glass:
+                return glass.Length;
+            case ResourceShapeType.Nose:
+                return nose.Length;
+            case ResourceShapeType.Noseline:
+                return noseline.Length;
+            default:
+                assert false;
+        }
+    }
+
+    public bool IsValid(int size)
+    {
+        return signature == 0x5253464E && version == 1 && fileSize == size;
+    }
+}
+
+// mii_ResourceTextureHeader.h
+
+public enum ResourceTextureType {
+    Hat=0,
+    Eye=1,
+    Eyebrow=2,
+    Beard=3,
+    Wrinkle=4,
+    Make=5,
+    Glass=6,
+    Mole=7,
+    Mouth=8,
+    Mustache=9,
+    Noseline=10,
+    End=11
+}
+
+public enum ResourceTileMode {
+    Optimal=0,
+    Linear=1,
+    End=2
+}
+
+public enum ResourceTextureFormat {
+    // Matches FFL.
+    R8_Unorm=0,
+    R8_B8_Unorm=1,
+    R8_G8_B8_A8_Unorm=2,
+    BC4_Unorm=3,
+    BC5_Unorm=4,
+    BC7_Unorm=5,
+    Astc4x4_Unorm=6,
+    End=7
+}
+
+/// The element for each texture in the resource header.
+/// Originally called "Element" in nn::mii::detail::ResourceTextureHeader namespace.
+public class TextureElement
+{
+    public const int Size = 0x1c;
+
+    ResourceCommonAttribute() common;
+    ResourceTextureAttribute() texture;
+
+    public ResourceCommonAttribute GetCommon()       => common;
+
+    public ResourceTextureAttribute GetTexture()     => texture;
+
+    public void FromBytes!(BinaryReader! reader)
+    {
+        common.FromBytes(reader);
+        texture.FromBytes(reader);
+    }
+}
+
+public class ResourceTextureAttribute {
+    public const int Size = 0xc;
+    // Same size as FFLiResourceTextureFooter, not identical.
+
+    int alignment;
+    ushort width;
+    ushort height;
+    byte format;   // ResourceTextureFormat
+    byte mipCount;
+    byte tileMode; // ResourceTileMode
+    byte[1] _pad;  // Unused padding for alignment.
+
+    public int GetAlignment()                        => alignment;
+    public void SetAlignment!(int v)                  { alignment = v; }
+
+    public ushort GetWidth()                         => width;
+    public void SetWidth!(ushort v)                   { width = v; }
+
+    public ushort GetHeight()                        => height;
+    public void SetHeight!(ushort v)                  { height = v; }
+
+    public ResourceTextureFormat GetFormat()         => ResourceTextureFormat.FromInt(format);
+    public void SetFormat!(ResourceTextureFormat v)   { format = v.ToInt(); }
+
+    public ResourceTileMode GetTileMode()            => ResourceTileMode.FromInt(tileMode);
+    public void SetTileMode!(ResourceTileMode v)      { tileMode = v.ToInt(); }
+
+    public void FromBytes!(BinaryReader! reader)
+    {
+        alignment = reader.ReadUInt32LE();
+        width = reader.ReadUInt16LE();
+        height = reader.ReadUInt16LE();
+        format = reader.ReadByte();
+        mipCount = reader.ReadByte();
+        tileMode = reader.ReadByte();
+        reader.Skip(1); // skip padding for alignment
+    }
+
+    public bool IsValid()
+    {
+        return alignment != 0
+            && format < ResourceTextureFormat.End.ToInt()
+            && width != 0
+            && height != 0
+            && mipCount != 0
+            && tileMode < ResourceTileMode.End.ToInt();
+    }
+
+}
+
+public class ResourceTextureHeader { // Size = 0x2428
+    public const int Size = 0x2428;
+
+    uint signature;          // 0x5254464e / "NFTR"
+    uint version;            // 1
+    uint fileSize;           // Includes size of header.
+    uint[11] maxSize;        // ResourceTextureType_End
+    uint[11] maxAlignment;   // Either 8 or 16.
+    TextureElement()[132] hat;     // HairType_End
+    TextureElement()[62] eye;      // EyeType_ResourceCount
+    TextureElement()[24] eyebrow;  // EyebrowType_End
+    TextureElement()[2] beard;     // BeardType_TextureCount
+    TextureElement()[12] wrinkle;  // FacelineWrinkle_End
+    TextureElement()[12] make;     // FacelineMake_End
+    TextureElement()[20] glass;    // GlassType_End
+    TextureElement()[2] mole;      // MoleType_End
+    TextureElement()[37] mouth;    // MouthType_ResourceCount
+    TextureElement()[6] mustache;  // MustacheType_End
+    TextureElement()[18] noseline; // NoseType_End
+
+    // —— Getters / Setters ——
+    // public void Init();
+    // bool IsValid(ulong size);
+    public void SetSizeAndAlignment!(ResourceTextureType type, uint size, uint alignment)
+    {
+        maxSize[type.ToInt()] = size;
+        maxAlignment[type.ToInt()] = alignment;
+    }
+    public uint GetMaxSize(ResourceTextureType type)      => maxSize[type.ToInt()];
+    public uint GetMaxAlignment(ResourceTextureType type) => maxAlignment[type.ToInt()];
+
+    public uint GetSignature()        => signature;
+    public void SetSignature!(uint v) { signature = v; }
+
+    public uint GetVersion()          => version;
+    public void SetVersion!(uint v)   { version = v; }
+
+    public uint GetFileSize()         => fileSize;
+    public void SetFileSize!(uint v)  { fileSize = v; }
+
+    /// Parse a ResourceShapeHeader from raw bytes.
+    /// Bounding boxes & hair/faceline transforms are just skipped.
+    public void FromBytes!(byte[] data)
+    {
+        BinaryReader() reader;
+
+        reader.SetData(data);
+
+        // Header scalars.
+        signature = reader.ReadUInt32LE();
+        version   = reader.ReadUInt32LE();
+        fileSize  = reader.ReadUInt32LE();
+        // Arrays.
+        for (int i = 0; i < maxSize.Length; i++)
+            maxSize[i] = reader.ReadUInt32LE();
+        for (int i = 0; i < maxAlignment.Length; i++)
+            maxAlignment[i] = reader.ReadUInt32LE();
+        // Set elements.
+        SetElementFromReader(reader, hat, hat.Length);
+        SetElementFromReader(reader, eye, eye.Length);
+        SetElementFromReader(reader, eyebrow, eyebrow.Length);
+        SetElementFromReader(reader, beard, beard.Length);
+        SetElementFromReader(reader, wrinkle, wrinkle.Length);
+        SetElementFromReader(reader, make, make.Length);
+        SetElementFromReader(reader, glass, glass.Length);
+        SetElementFromReader(reader, mole, mole.Length);
+        SetElementFromReader(reader, mouth, mouth.Length);
+        SetElementFromReader(reader, mustache, mustache.Length);
+        SetElementFromReader(reader, noseline, noseline.Length);
+    }
+
+    void SetElementFromReader!(BinaryReader! reader, TextureElement()[]! elements, int length)
+    {
+        for (int i = 0; i < length; i++)
+            elements[i].FromBytes(reader);
+    }
+    
+    public TextureElement() GetElement(ResourceTextureType textureType, int resourceIndex)
+    {
+        assert resourceIndex < GetElementCount(textureType);
+    
+        switch (textureType)
+        {
+            case ResourceTextureType.Hat:
+                return hat[resourceIndex];
+            case ResourceTextureType.Eye:
+                return eye[resourceIndex];
+            case ResourceTextureType.Eyebrow:
+                return eyebrow[resourceIndex];
+            case ResourceTextureType.Beard:
+                return beard[resourceIndex];
+            case ResourceTextureType.Wrinkle:
+                return wrinkle[resourceIndex];
+            case ResourceTextureType.Make:
+                return make[resourceIndex];
+            case ResourceTextureType.Glass:
+                return glass[resourceIndex];
+            case ResourceTextureType.Mole:
+                return mole[resourceIndex];
+            case ResourceTextureType.Mouth:
+                return mouth[resourceIndex];
+            case ResourceTextureType.Mustache:
+                return mustache[resourceIndex];
+            case ResourceTextureType.Noseline:
+                return noseline[resourceIndex];
+            default:
+                assert false;
+        }
+    }
+    
+    public int GetElementCount(ResourceTextureType textureType)
+    {
+        assert textureType < ResourceTextureType.End;
+    
+        switch (textureType)
+        {
+            case ResourceTextureType.Hat:
+                return hat.Length;
+            case ResourceTextureType.Eye:
+                return eye.Length;
+            case ResourceTextureType.Eyebrow:
+                return eyebrow.Length;
+            case ResourceTextureType.Beard:
+                return beard.Length;
+            case ResourceTextureType.Wrinkle:
+                return wrinkle.Length;
+            case ResourceTextureType.Make:
+                return make.Length;
+            case ResourceTextureType.Glass:
+                return glass.Length;
+            case ResourceTextureType.Mole:
+                return mole.Length;
+            case ResourceTextureType.Mouth:
+                return mouth.Length;
+            case ResourceTextureType.Mustache:
+                return mustache.Length;
+            case ResourceTextureType.Noseline:
+                return noseline.Length;
+            default:
+                assert false;
+        }
+    }
+    
+    public bool IsValid(int size)
+    {
+        return signature == 0x5254464E && version == 1 && fileSize == size;
+    }
+
+}
+
+public abstract class ZlibInterface
+{
+    /// Returns true if inflation is finished.
+    public abstract bool IsStreamEnd();
+
+    /// Sets window bits and resets the inflator.
+    public abstract void SetWindowBits!(int windowBits);
+
+    /// Sets the input buffer for the inflator.
+    public abstract void SetInput!(byte[] input, int offset, int length);
+
+    /// Decompresses into the given output buffer.
+    /// Returns number of bytes written or -1 on error.
+    public abstract int Inflate!(byte[]! output, int offset, int length);
+
+    /// Destroys the inflator and releases resources.
+    public abstract void Finalize!();
+}
+
+/*
+native
+{
+    #include <zlib.h>
+}
+public class ZlibInflatorImpl : ZlibInterface
+{
+    bool isStreamEnd;
+    native { z_stream strm; }
+
+    public ZlibInflatorImpl()
+    {
+        native {
+            self->isStreamEnd = false;
+            // Default window bits as 15 for raw deflate / use 15+32 for gzip support
+            inflateInit2(&self->strm, 15);
+        }
+    }
+    
+    public override bool IsStreamEnd() => isStreamEnd;
+
+    public override void SetWindowBits!(int windowBits)
+    { native {
+        inflateReset2(&self->strm, windowBits);
+    } }
+
+    public override void SetInput!(byte[] input, int offset, int length)
+    { native {
+            self->strm.next_in = (Bytef *) input + offset;
+            self->strm.avail_in = length;
+     } }
+
+    public override int Inflate!(byte[]! output, int offset, int length)
+    { native {
+            self->strm.next_out = (Bytef *) output + offset;
+            self->strm.avail_out = length;
+
+            int ret = inflate(&self->strm, Z_NO_FLUSH);
+            if (ret == Z_STREAM_END)
+                self->isStreamEnd = false;
+            else if (ret != Z_OK)
+                return ret;
+
+            return length - self->strm.avail_out;
+    } return 0; }
+
+    public override void Finalize!() { native { inflateEnd(&self->strm); } }
+}
+*/
+
+public class PData
+{
+    byte[]# data;
+    uint offset;
+    uint size;
+
+    public byte[] GetData()        => data;
+    public void SetData!(byte[]# v)  { data = v; }
+
+    public uint GetOffset()        => offset;
+    public void SetOffset!(uint v)  { offset = v; }
+
+    public uint GetSize()          => size;
+    public void SetSize!(uint v)    { size = v; }
+}
+
+public static class Main
+{
+    // jasmine's hair
+    //const ResourceShapeType shapeType = ResourceShapeType.HairForNormal;
+    //const int shapeIndex = 123;
+    // jasmine's faceline
+    //const ResourceShapeType shapeType = ResourceShapeType.Faceline;
+    //const int shapeIndex = 9;
+    // First shape in the resource.
+    //const ResourceShapeType shapeType = ResourceShapeType.Beard;
+    //const int shapeIndex = 1;
+
+    public static void ReadTest(int argc, string[]# argv, byte[] data, ZlibInterface! inflator)
+    {
+        ResourceShapeHeader() header;
+        header.FromBytes(data);
+
+        Console.WriteLine($"header magic: {header.GetSignature():X4}");
+        if (!header.IsValid(header.GetFileSize()))
+        {
+            Console.Error.WriteLine($"ERROR: header.IsValid() returned false");
+            return;
+        }
+
+        ShapeElement() el = header.GetElement(ResourceShapeType.HairForNormal, 123);
+        ResourceCommonAttribute common = el.GetCommon();
+        if (!common.IsValid())
+        {
+            Console.Error.WriteLine($"ERROR: common.IsValid() returned false");
+            return;
+        }
+        ResourceShapeAttribute shape = el.GetShape();
+        if (!shape.IsValid(common.GetSize()))
+        {
+            Console.Error.WriteLine($"ERROR: shape.IsValid() returned false");
+            return;
+        }
+        
+        
+        Console.WriteLine($"offset of hair: {common.GetOffset()}, compressed size: {common.GetCompressedSize()}");
+    
+        int rawSize = common.GetSize();
+        byte[]# shapeData = new byte[rawSize];
+        int cmpSize = common.GetCompressedSize();
+
+        // ZlibInterface# inflator = new ZlibInflatorImpl();
+
+        inflator.SetInput(data, common.GetOffset(), cmpSize);
+        int decompressedSize = inflator.Inflate(shapeData, 0, rawSize);
+        if (decompressedSize < 0)
+        {
+            Console.Error.WriteLine($"ERROR: inflator.Inflate failed with result: {decompressedSize}");
+            return;
+        }
+
+        for (int i = 0; i < AttributeType.End.ToInt(); i++)
+        {
+            if (shape.IsValidAttribute(AttributeType.FromInt(i)))
+                Console.WriteLine($"valid attribute: {i}");
+        }
+
+        Console.WriteLine("look at shapeData");
+    }
+    
+    public static PData#? ExportTextureTest(int argc, string[]# argv, byte[] data, ZlibInterface! inflator)
+    {
+        ResourceTextureHeader() header;
+        header.FromBytes(data);
+
+        Console.WriteLine($"header magic: {header.GetSignature():X4}");
+        if (!header.IsValid(header.GetFileSize()))
+        {
+            Console.Error.WriteLine($"ERROR: header.IsValid() returned false");
+            return null;
+        }
+
+        // Use Jasmine's eye as default texture.
+        int textureType = ResourceTextureType.Eye.ToInt();
+        int textureIndex = 33;
+
+        // Parse texture type/index from argv.
+        if (argc > 4)
+        {
+            if (textureType.TryParse(argv[3])) 
+                Console.WriteLine($"got texture type from input: {textureType}");
+            if (textureIndex.TryParse(argv[4]))
+                Console.WriteLine($"got texture index from input: {textureIndex}");
+        }
+
+        // Get specified texture.
+        TextureElement() el = header.GetElement(ResourceTextureType.FromInt(textureType), textureIndex);
+        ResourceCommonAttribute common = el.GetCommon();
+        if (!common.IsValid())
+        {
+            Console.Error.WriteLine($"ERROR: common.IsValid() returned false");
+            return null;
+        }
+        ResourceTextureAttribute texture = el.GetTexture();
+        if (!texture.IsValid())
+        {
+            Console.Error.WriteLine($"ERROR: texture.IsValid() returned false");
+            return null;
+        }
+        
+        
+        Console.WriteLine($"offset of eye: {common.GetOffset():X}, compressed size: {common.GetCompressedSize()}");
+    
+        int offset = KTX1Header.HeaderSize;
+        int rawSize = common.GetSize();
+        byte[]# textureData = new byte[offset + rawSize];
+ 
+        int cmpSize = common.GetCompressedSize();
+
+        inflator.SetInput(data, common.GetOffset(), cmpSize);
+        int decompressedSize = inflator.Inflate(textureData, offset, rawSize);
+        if (decompressedSize < 0)
+        {
+            Console.Error.WriteLine($"ERROR: inflator.Inflate failed with result: {decompressedSize}");
+            return null;
+        }
+        assert decompressedSize == rawSize;
+
+        // Reference: https://github.com/bkaradzic/bimg/blob/446b9eb11130821fd11607c2fc94aee80976e56a/src/image.cpp#L3882
+        const int[7] TextureFormatToGLFormat = { // ResourceTextureFormat.End
+            0x8229, // R8_Unorm          / KTX_R8
+            0x822B, // R8_B8_Unorm       / KTX_RG8
+            0x8058, // R8_G8_B8_A8_Unorm / KTX_RGBA8
+            0x8C70, // BC4_Unorm         / KTX_COMPRESSED_LUMINANCE_LATC1_EXT
+            0x8C72, // BC5_Unorm         / KTX_COMPRESSED_LUMINANCE_ALPHA_LATC2_EXT
+            0x8E8C, // BC7_Unorm         / KTX_COMPRESSED_RGBA_BPTC_UNORM_ARB
+            0x93B0  // Astc4x4_Unorm     / KTX_COMPRESSED_RGBA_ASTC_4x4_KHR
+        };
+        const int[7] TextureFormatToGLInternalFormat = { // ResourceTextureFormat.End
+            0x1903, // R8_Unorm          / KTX_RED
+            0x8227, // R8_B8_Unorm       / KTX_RG
+            0x1908, // R8_G8_B8_A8_Unorm / KTX_RGBA
+            0x1903, // BC4_Unorm         / KTX_RED
+            0x8227, // BC5_Unorm         / KTX_RG
+            0x1908, // BC7_Unorm         / KTX_RGBA
+            0x1908  // Astc4x4_Unorm     / KTX_RGBA
+        };
+
+        if (texture.GetTileMode() != ResourceTileMode.Linear)
+            Console.WriteLine("WARNING: tile mode is not linear so it will look brokened");
+
+        KTX1Header.WriteHeader(textureData, 0,
+            texture.GetWidth(), texture.GetHeight(), TextureFormatToGLFormat[texture.GetFormat().ToInt()],
+                TextureFormatToGLInternalFormat[texture.GetFormat().ToInt()], 0x1401);
+/*
+        // Mapping from ResourceTextureFormat to Vulkan VkFormat
+        const int[7] TextureFormatToVkFormat = {
+            9,   // R8_Unorm          → VK_FORMAT_R8_UNORM
+            16,  // R8_B8_Unorm       → VK_FORMAT_R8G8_UNORM
+            37,  // R8_G8_B8_A8_Unorm → VK_FORMAT_R8G8B8A8_UNORM
+            139, // BC4_Unorm         → VK_FORMAT_BC4_UNORM_BLOCK
+            141, // BC5_Unorm         → VK_FORMAT_BC5_UNORM_BLOCK
+            145, // BC7_Unorm         → VK_FORMAT_BC7_UNORM_BLOCK
+            157  // Astc4x4_Unorm     → VK_FORMAT_ASTC_4x4_UNORM_BLOCK
+        };
+        KTX2Header.WriteHeader(textureData, 0,
+            TextureFormatToVkFormat[texture.GetFormat().ToInt()], 1, texture.GetWidth(), texture.GetHeight(), 0, 1, 1, 1, 0);
+*/
+
+        Console.WriteLine("look at textureData");
+
+        PData# pData = new PData();
+        pData.SetData(textureData);
+        pData.SetOffset(0);
+        pData.SetSize(offset + rawSize);
+        return pData;
+    }
+
+    public static List<byte>? ExportTest(int argc, string[]# argv, byte[] data, ZlibInterface! inflator)
+    {
+        // Parse resource header.
+        ResourceShapeHeader() header;
+        header.FromBytes(data);
+
+        Console.WriteLine($"header magic: {header.GetSignature():X4}");
+        if (!header.IsValid(header.GetFileSize()))
+        {
+            Console.Error.WriteLine($"ERROR: header.IsValid() returned false");
+            return null;
+        }
+
+        // Use Jasmine's hair as default shape.
+        int shapeType = ResourceShapeType.HairForNormal.ToInt();
+        int shapeIndex = 123;
+
+        // Parse shape type/index from argv.
+        if (argc > 4)
+        {
+            if (shapeType.TryParse(argv[3])) 
+                Console.WriteLine($"got shape type from input: {shapeType}");
+            if (shapeIndex.TryParse(argv[4]))
+                Console.WriteLine($"got shape index from input: {shapeIndex}");
+        }
+
+        // Get specified shape.
+        ShapeElement() el = header.GetElement(ResourceShapeType.FromInt(shapeType), shapeIndex);
+        ResourceCommonAttribute common = el.GetCommon();
+        ResourceShapeAttribute shape = el.GetShape();
+
+        // Validate shape element.
+        if (!shape.IsValid(common.GetSize()))
+        {
+            Console.Error.WriteLine($"ERROR: shape.IsValid() returned false");
+            return null;
+        }
+
+        // Create buffer for decompressed data.
+        int rawSize = common.GetSize();
+        byte[]# shapeData = new byte[rawSize];
+        // native { memset(shapeData, 0xff, rawSize); } // memset for debug (all floats are NaN)
+
+        // Prepare to decompress into buffer.
+        int cmpSize = common.GetCompressedSize();
+        // inflator.SetWindowBits(5); // windowBits 12/13 are used by FFL.
+        // Set location of the data.
+        inflator.SetInput(data, common.GetOffset(), cmpSize);
+        // Decompress and check result.
+        int decompressedSize = inflator.Inflate(shapeData, 0, rawSize);
+        if (decompressedSize < 0)
+        {
+            Console.Error.WriteLine($"ERROR: inflator.Inflate failed with result: {decompressedSize}");
+            return null;
+        }
+
+        GLBExporter() exporter;
+        ExportShape(exporter, shapeData, shape);
+        return exporter.Export();
+    }
+
+
+    static void ExportShape(GLBExporter! exporter, byte[] shapeData, ResourceShapeAttribute shape)
+    {
+        // Set bounding box.
+        float[] min = shape.GetBoundingMin();
+        float[] max = shape.GetBoundingMax();
+        exporter.SetBoundingBox(min[0], min[1], min[2], max[0], max[1], max[2]);
+
+        BinaryReader() reader;
+
+        // Read positions.
+        reader.SetData(shapeData);
+        reader.SetIndex(shape.GetAttributeOffset(AttributeType.Position));
+        uint size = shape.GetAttributeSize(AttributeType.Position);
+        // full vector = 8, single component = 2
+        uint vertexCount = size / 8;
+        float[]# positions = new float[vertexCount * 3];
+        for (int i = 0; i < vertexCount; i++)
+        {
+            ushort comp1 = reader.ReadUInt16LE();
+            ushort comp2 = reader.ReadUInt16LE();
+            ushort comp3 = reader.ReadUInt16LE();
+            reader.Skip(2); // skip padding for alignment
+            // convert to float
+            positions[i * 3 + 0] = BitConverter.HalfToFloat(comp1);
+            assert !Math.IsNaN(positions[i * 3 + 0]);
+            positions[i * 3 + 1] = BitConverter.HalfToFloat(comp2);
+            assert !Math.IsNaN(positions[i * 3 + 1]);
+            positions[i * 3 + 2] = BitConverter.HalfToFloat(comp3);
+            assert !Math.IsNaN(positions[i * 3 + 2]);
+        }
+        exporter.AddPositions(positions, vertexCount * 3);
+
+        // Read indices.
+        reader.SetIndex(shape.GetIndexOffset());
+        uint indexCount = shape.GetIndexSize() / 2;
+        ushort[]# indices = new ushort[indexCount];
+        for (int i = 0; i < indexCount; i++)
+        {
+            indices[i] = reader.ReadUInt16LE();
+        }
+        exporter.AddIndices(indices, indexCount);
+
+        // Add optional attributes.
+
+        // Normals
+        if (shape.IsValidAttribute(AttributeType.Normal))
+        {
+            byte offset = shape.GetAttributeOffset(AttributeType.Normal);
+            reader.SetIndex(offset);
+            uint size = shape.GetAttributeSize(AttributeType.Normal);
+            //byte[]# normals = new byte[size];
+            //shapeData.CopyTo(offset, normals, 0, size);
+            float[]# normals = new float[vertexCount * 3];
+            for (int i = 0; i < vertexCount; i++)
+            {
+                ushort val = reader.ReadUInt32LE();
+                BitConverter.Convert1010102ToFloat(val, normals, i);
+                assert !Math.IsNaN(normals[i * 3 + 0]);
+                assert !Math.IsNaN(normals[i * 3 + 1]);
+                assert !Math.IsNaN(normals[i * 3 + 2]);
+            }
+            exporter.AddNormals(normals, vertexCount * 3);
+        }
+        // Texture coordinates (UVs)
+        if (shape.IsValidAttribute(AttributeType.Uv))
+        {
+            reader.SetIndex(shape.GetAttributeOffset(AttributeType.Uv));
+            size = shape.GetAttributeSize(AttributeType.Uv);
+            float[]# texcoords = new float[vertexCount * 2];
+            for (int i = 0; i < vertexCount; i++)
+            {
+                ushort comp1 = reader.ReadUInt16LE();
+                ushort comp2 = reader.ReadUInt16LE();
+                texcoords[i * 2 + 0] = BitConverter.HalfToFloat(comp1);
+                assert !Math.IsNaN(texcoords[i * 2 + 0]);
+                texcoords[i * 2 + 1] = BitConverter.HalfToFloat(comp2);
+                assert !Math.IsNaN(texcoords[i * 2 + 1]);
+            }
+            exporter.AddTexcoords(texcoords, vertexCount * 2);
+        }
+        // Tangents
+        /*
+        if (shape.IsValidAttribute(AttributeType.Tangent))
+        {
+            byte offset = shape.GetAttributeOffset(AttributeType.Tangent);
+            uint size = shape.GetAttributeSize(AttributeType.Tangent);
+            byte[]# tangents = new byte[size];
+            shapeData.CopyTo(offset, tangents, 0, size);
+            exporter.AddTangents(tangents, size);
+        }
+        */
+        // Colors ("Param")
+        if (shape.IsValidAttribute(AttributeType.Param))
+        {
+            byte offset = shape.GetAttributeOffset(AttributeType.Param);
+            uint size = shape.GetAttributeSize(AttributeType.Param);
+            byte[]# colors = new byte[size];
+            shapeData.CopyTo(offset, colors, 0, size);
+            exporter.AddColors(colors, size);
+        }
+    }
+}
