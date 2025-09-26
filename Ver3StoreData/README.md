@@ -191,7 +191,8 @@ I thought about making a static class that'd have these 16-bit/32-bit read primi
 
 So, what I have in mind currently is a "Pointer" class that has read primitives on it and gets passed by reference. I currently haven't tried this.
 
-But I am at least a little worried about originally wanting no dependencies, or very little. Hopefully if I do the class, it'll either be very tiny, or able to be easily inlined in JS and C.
+I am worried, though, that having this class and state would hold up how calls of it can be inlined. I also originally wanted no dependencies, or very little.
+Hopefully if I do the class, it'll either be very tiny, or able to be easily inlined in JS and C.
 
 ### Final conflict: Test Driven Development
 

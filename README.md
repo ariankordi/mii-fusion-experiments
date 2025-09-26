@@ -12,7 +12,7 @@ Yeah, Fusion is kinda funky here. You'll want to [start by downloading a release
 
 Fusion doesn't have a concept of imports, everything is just built into one file. (!!! which I hope changes). So you glob all of the .fu source into one file in your target language.
 
-It also doesn't encourage you to build your whole program with it, so, you can have a `Main()` function and that'll be where the program starts BUT you can't open files or even read argv. Fusion just wants you to make library code, and MAYBE some small tests that run in the Main() function.
+You're also not encouraged to build your whole program in Fusion. You can have a `Main()` function and read argv, but you can't currently open files. Fusion just wants you to make library code, and MAYBE some small tests that run in the Main() function.
 
 For each of these samples I'll have some build instructions. All other languages should? be straightforward unless I didn't test it. **One notable exception** is that, you should add your language as a definition, e.g. `-D PY`, `-D C`, `-D CPP`... Because some code targets a specific language and Fusion doesn't let you know this inside of the code yet without adding that def.
 
@@ -51,3 +51,14 @@ node ShapeMain.mjs ShapeMid.dat shape.glb # emits default hair 123
 Then view it in something like this: https://gltf-viewer.donmccurdy.com and Admire.
 
 (I also tried to implement textures at some point by exporting KTX but uh didn't work before I gave up)
+
+### Mask (2025/05/12)
+
+This is it. The last one of the trifecta needed for a Mii library: Data parsing, resource reading, and mask drawing.
+
+The "Mask" in Mii rendering is the texture that contains most of the facial features. The coordinates of each part are calculated and turned into quads, which are drawn into a texture and multiple mask textures are used for each expression.
+
+So what did I implement- pretty much nothing.
+
+In May I had reimplemented [this one function, CalcMVMatrix](https://github.com/aboood40091/ffl/blob/73fe9fc70c0f96ebea373122e50f6d3acc443180/src/FFLiRawMaskParts.cpp#L72-L86). But I plan to reimplement a larger amount soon from my own decompilation of nn::mii, so expect something NEW here eventually!!!!!
+
