@@ -650,7 +650,7 @@ public static class BitConverter
 #elif PY
         native
         {
-            // Pack into 4 bytes little‑endian, then unpack as float.
+            # Pack into 4 bytes little‑endian, then unpack as float.
             packed = struct.pack("<I", bits)
             (value,) = struct.unpack("<f", packed)
             return value
