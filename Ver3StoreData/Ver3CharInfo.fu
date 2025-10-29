@@ -1,222 +1,89 @@
 /// CharInfo for CFL/FFL, representing fields of Ver3StoreData.
 public class Ver3CharInfo
 {
-    int MiiVersion;
+    public int MiiVersion;
 
-    int FaceType;
-    int FaceColor;
-    int FaceTex;
-    int FaceMake;
+    public int FaceType;
+    public int FaceColor;
+    public int FaceTex;
+    public int FaceMake;
 
-    int HairType;
-    int HairColor;
-    int HairFlip;
+    public int HairType;
+    public int HairColor;
+    public int HairFlip;
 
-    int EyeType;
-    int EyeColor;
-    int EyeScale;
-    int EyeAspect;
-    int EyeRotate;
-    int EyeX;
-    int EyeY;
+    public int EyeType;
+    public int EyeColor;
+    public int EyeScale;
+    public int EyeAspect;
+    public int EyeRotate;
+    public int EyeX;
+    public int EyeY;
 
-    int EyebrowType;
-    int EyebrowColor;
-    int EyebrowScale;
-    int EyebrowAspect;
-    int EyebrowRotate;
-    int EyebrowX;
-    int EyebrowY;
+    public int EyebrowType;
+    public int EyebrowColor;
+    public int EyebrowScale;
+    public int EyebrowAspect;
+    public int EyebrowRotate;
+    public int EyebrowX;
+    public int EyebrowY;
 
-    int NoseType;
-    int NoseScale;
-    int NoseY;
+    public int NoseType;
+    public int NoseScale;
+    public int NoseY;
 
-    int MouthType;
-    int MouthColor;
-    int MouthScale;
-    int MouthAspect;
-    int MouthY;
+    public int MouthType;
+    public int MouthColor;
+    public int MouthScale;
+    public int MouthAspect;
+    public int MouthY;
 
-    int MustacheType;
-    int BeardType;
-    int BeardColor;
-    int BeardScale;
-    int BeardY;
+    public int MustacheType;
+    public int BeardType;
+    public int BeardColor;
+    public int BeardScale;
+    public int BeardY;
 
-    int GlassType;
-    int GlassColor;
-    int GlassScale;
-    int GlassY;
+    public int GlassType;
+    public int GlassColor;
+    public int GlassScale;
+    public int GlassY;
 
-    int MoleType;
-    int MoleScale;
-    int MoleX;
-    int MoleY;
+    public int MoleType;
+    public int MoleScale;
+    public int MoleX;
+    public int MoleY;
 
-    int Height;
-    int Build;
+    public int Height;
+    public int Build;
 
-    ushort[11] Name;
-    ushort[11] CreatorName;
+    public ushort[11] Name;
+    public ushort[11] CreatorName;
 
-    int Gender;
-    int BirthMonth;
-    int BirthDay;
-    int FavoriteColor;
-    bool Favorite;
-    bool Copyable;
-    bool NgWord;
-    bool Localonly;
-    int RegionMove;
-    int FontRegion;
-    int RoomIndex;
-    int PositionInRoom;
-    int BirthPlatform;
+    public int Gender;
+    public int BirthMonth;
+    public int BirthDay;
+    public int FavoriteColor;
+    public bool Favorite;
+    public bool Copyable;
+    public bool NgWord;
+    public bool Localonly;
+    public int RegionMove;
+    public int FontRegion;
+    public int RoomIndex;
+    public int PositionInRoom;
+    public int BirthPlatform;
 
-    byte[10] CreateId;
-    int AuthorType;
+    public byte[10] CreateId;
+    public int AuthorType;
     // ushort Padding0;
-    byte[8] AuthorId;
+    public byte[8] AuthorId;
 
-    // Getters and setters for each field.
+    public void SetAuthorId!(byte[] value, int offset = 0)
+    {
+        value.CopyTo(offset, AuthorId, 0, AuthorId.Length);
+    }
 
-    public int GetMiiVersion() => MiiVersion;
-    public void SetMiiVersion!(int value) { MiiVersion = value; }
-
-    public int GetFaceType() => FaceType;
-    public void SetFaceType!(int value) { FaceType = value; }
-
-    public int GetFaceColor() => FaceColor;
-    public void SetFaceColor!(int value) { FaceColor = value; }
-
-    public int GetFaceTex() => FaceTex;
-    public void SetFaceTex!(int value) { FaceTex = value; }
-
-    public int GetFaceMake() => FaceMake;
-    public void SetFaceMake!(int value) { FaceMake = value; }
-
-    public int GetHairType() => HairType;
-    public void SetHairType!(int value) { HairType = value; }
-
-    public int GetHairColor() => HairColor;
-    public void SetHairColor!(int value) { HairColor = value; }
-
-    public int GetHairFlip() => HairFlip;
-    public void SetHairFlip!(int value) { HairFlip = value; }
-
-    public int GetEyeType() => EyeType;
-    public void SetEyeType!(int value) { EyeType = value; }
-
-    public int GetEyeColor() => EyeColor;
-    public void SetEyeColor!(int value) { EyeColor = value; }
-
-    public int GetEyeScale() => EyeScale;
-    public void SetEyeScale!(int value) { EyeScale = value; }
-
-    public int GetEyeAspect() => EyeAspect;
-    public void SetEyeAspect!(int value) { EyeAspect = value; }
-
-    public int GetEyeRotate() => EyeRotate;
-    public void SetEyeRotate!(int value) { EyeRotate = value; }
-
-    public int GetEyeX() => EyeX;
-    public void SetEyeX!(int value) { EyeX = value; }
-
-    public int GetEyeY() => EyeY;
-    public void SetEyeY!(int value) { EyeY = value; }
-
-    public int GetEyebrowType() => EyebrowType;
-    public void SetEyebrowType!(int value) { EyebrowType = value; }
-
-    public int GetEyebrowColor() => EyebrowColor;
-    public void SetEyebrowColor!(int value) { EyebrowColor = value; }
-
-    public int GetEyebrowScale() => EyebrowScale;
-    public void SetEyebrowScale!(int value) { EyebrowScale = value; }
-
-    public int GetEyebrowAspect() => EyebrowAspect;
-    public void SetEyebrowAspect!(int value) { EyebrowAspect = value; }
-
-    public int GetEyebrowRotate() => EyebrowRotate;
-    public void SetEyebrowRotate!(int value) { EyebrowRotate = value; }
-
-    public int GetEyebrowX() => EyebrowX;
-    public void SetEyebrowX!(int value) { EyebrowX = value; }
-
-    public int GetEyebrowY() => EyebrowY;
-    public void SetEyebrowY!(int value) { EyebrowY = value; }
-
-    public int GetNoseType() => NoseType;
-    public void SetNoseType!(int value) { NoseType = value; }
-
-    public int GetNoseScale() => NoseScale;
-    public void SetNoseScale!(int value) { NoseScale = value; }
-
-    public int GetNoseY() => NoseY;
-    public void SetNoseY!(int value) { NoseY = value; }
-
-    public int GetMouthType() => MouthType;
-    public void SetMouthType!(int value) { MouthType = value; }
-
-    public int GetMouthColor() => MouthColor;
-    public void SetMouthColor!(int value) { MouthColor = value; }
-
-    public int GetMouthScale() => MouthScale;
-    public void SetMouthScale!(int value) { MouthScale = value; }
-
-    public int GetMouthAspect() => MouthAspect;
-    public void SetMouthAspect!(int value) { MouthAspect = value; }
-
-    public int GetMouthY() => MouthY;
-    public void SetMouthY!(int value) { MouthY = value; }
-
-    public int GetMustacheType() => MustacheType;
-    public void SetMustacheType!(int value) { MustacheType = value; }
-
-    public int GetBeardType() => BeardType;
-    public void SetBeardType!(int value) { BeardType = value; }
-
-    public int GetBeardColor() => BeardColor;
-    public void SetBeardColor!(int value) { BeardColor = value; }
-
-    public int GetBeardScale() => BeardScale;
-    public void SetBeardScale!(int value) { BeardScale = value; }
-
-    public int GetBeardY() => BeardY;
-    public void SetBeardY!(int value) { BeardY = value; }
-
-    public int GetGlassType() => GlassType;
-    public void SetGlassType!(int value) { GlassType = value; }
-
-    public int GetGlassColor() => GlassColor;
-    public void SetGlassColor!(int value) { GlassColor = value; }
-
-    public int GetGlassScale() => GlassScale;
-    public void SetGlassScale!(int value) { GlassScale = value; }
-
-    public int GetGlassY() => GlassY;
-    public void SetGlassY!(int value) { GlassY = value; }
-
-    public int GetMoleType() => MoleType;
-    public void SetMoleType!(int value) { MoleType = value; }
-
-    public int GetMoleScale() => MoleScale;
-    public void SetMoleScale!(int value) { MoleScale = value; }
-
-    public int GetMoleX() => MoleX;
-    public void SetMoleX!(int value) { MoleX = value; }
-
-    public int GetMoleY() => MoleY;
-    public void SetMoleY!(int value) { MoleY = value; }
-
-    public int GetHeight() => Height;
-    public void SetHeight!(int value) { Height = value; }
-
-    public int GetBuild() => Build;
-    public void SetBuild!(int value) { Build = value; }
-
-    public ushort[] GetName() => Name;
     public void SetName!(ushort[] value, int offset = 0)
     {
         for (int i = 0; i < 10; i++)
@@ -225,66 +92,16 @@ public class Ver3CharInfo
         Name[10] = 0;
     }
 
-    public ushort[] GetCreatorName() => CreatorName;
-    public void SetCreatorName!(ushort[] value, int offset = 0)
-        {
-        for (int i = 0; i < 10; i++)
-            CreatorName[i] = value[offset + i];
-        CreatorName[10] = 0;
-    }
-
-    public int GetGender() => Gender;
-    public void SetGender!(int value) { Gender = value; }
-
-    public int GetBirthMonth() => BirthMonth;
-    public void SetBirthMonth!(int value) { BirthMonth = value; }
-
-    public int GetBirthDay() => BirthDay;
-    public void SetBirthDay!(int value) { BirthDay = value; }
-
-    public int GetFavoriteColor() => FavoriteColor;
-    public void SetFavoriteColor!(int value) { FavoriteColor = value; }
-
-    public bool GetFavorite() => Favorite;
-    public void SetFavorite!(int value) { Favorite = (value != 0); }
-
-    public bool GetCopyable() => Copyable;
-    public void SetCopyable!(int value) { Copyable = (value != 0); }
-
-    public bool GetNgWord() => NgWord;
-    public void SetNgWord!(int value) { NgWord = (value != 0); }
-
-    public bool GetLocalonly() => Localonly;
-    public void SetLocalonly!(int value) { Localonly = (value != 0); }
-
-    public int GetRegionMove() => RegionMove;
-    public void SetRegionMove!(int value) { RegionMove = value; }
-
-    public int GetFontRegion() => FontRegion;
-    public void SetFontRegion!(int value) { FontRegion = value; }
-
-    public int GetRoomIndex() => RoomIndex;
-    public void SetRoomIndex!(int value) { RoomIndex = value; }
-
-    public int GetPositionInRoom() => PositionInRoom;
-    public void SetPositionInRoom!(int value) { PositionInRoom = value; }
-
-    public int GetBirthPlatform() => BirthPlatform;
-    public void SetBirthPlatform!(int value) { BirthPlatform = value; }
-
-    public byte[] GetCreateId() => CreateId;
     public void SetCreateId!(byte[] value, int offset = 0)
     {
         value.CopyTo(offset, CreateId, 0, CreateId.Length);
     }
 
-    public int GetAuthorType() => AuthorType;
-    public void SetAuthorType!(int value) { AuthorType = value; }
-
-    public byte[] GetAuthorId() => AuthorId;
-    public void SetAuthorId!(byte[] value, int offset = 0)
-    {
-        value.CopyTo(offset, AuthorId, 0, AuthorId.Length);
+    public void SetCreatorName!(ushort[] value, int offset = 0)
+        {
+        for (int i = 0; i < 10; i++)
+            CreatorName[i] = value[offset + i];
+        CreatorName[10] = 0;
     }
 
     public void IsValid()
