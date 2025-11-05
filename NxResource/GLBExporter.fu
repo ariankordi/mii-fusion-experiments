@@ -650,7 +650,7 @@ public static class BitConverter
 #elif PY
         native
         {
-            // Pack into 4 bytes little‑endian, then unpack as float.
+            # Pack into 4 bytes little‑endian, then unpack as float.
             packed = struct.pack("<I", bits)
             (value,) = struct.unpack("<f", packed)
             return value
@@ -727,7 +727,7 @@ public static class BitConverter
 #elif PY
         # Python: struct.pack/unpack
         native {
-            # '<f' = little-endian float; '<I' = little-endian uint32
+            # <f = little-endian float; <I = little-endian uint32
             return struct.unpack("<I", struct.pack("<f", value))[0];
         }
         return 0;
@@ -743,7 +743,7 @@ public static class BitConverter
         }
         return 0;
 #else
-        assert "Not implemented for pure Fusion.";
+        assert false, "Not implemented for pure Fusion.";
 #endif
     }
 
