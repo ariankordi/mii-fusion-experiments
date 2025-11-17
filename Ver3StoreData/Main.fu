@@ -16,6 +16,6 @@ public class Hello
         //storeData.SetFromCharInfo(charInfo);
         Ver3StoreData.ToStoreDataBytes(output, charInfo);
         Console.WriteLine($"re-encoded back into base64: {Convert.ToBase64String(output, 0, 96)}");
-        Console.WriteLine($"name: {Utf16ToUtf8Converter.Convert(charInfo.GetName(), 10)}");
+        Console.WriteLine($"name: {Utf16ToUtf8Converter.Convert(charInfo.Name, 10)}");
     }
 }
