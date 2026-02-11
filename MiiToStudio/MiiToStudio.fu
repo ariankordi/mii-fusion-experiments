@@ -1,0 +1,410 @@
+/// Class for converting various Nintendo Mii formats to "Mii Studio" data,
+/// passed to the studio.mii.nintendo.com rendering API to get a Mii image.
+/// Converted data is stored in this class instance.
+///
+/// Most methods are made from decompiled C code (mii-to-studio-conv.c).
+/// This creates code that is unreadable, yet efficient and compatible.
+/// But the structures and validation are set in stone, unless there's a bug.
+public class MiiToStudio {
+    /// Size of Wii format Mii data (RFLCharData).
+    public const uint SizeWiiData = 74;
+    /// Base size of 3DS/Wii U format Mii data.
+    /// Usually 96 bytes long (FFLStoreData, Ver3StoreData).
+    public const uint Size3dsWiiuData = 72;
+    /// Size of Switch "nn::mii::CharInfo" format.
+    public const uint SizeNxCharInfo = 88;
+
+    /// Base URL of /miis/image.png API that returns a Mii image.
+    /// This can also be replaced by mii-unsecure.ariankordi.net.
+    public const string UrlBaseImagePng = "https://studio.mii.nintendo.com/miis/image.png?data=";
+
+    const uint SizeStudioRawData = 46;
+    const uint SizeStudioUrlData = 47;
+    /// Internal buffer returned by conversion methods.
+    byte[SizeStudioRawData] buf;
+
+    // Unsupported Switch data formats.
+    const uint SizeNxStoreData = 68;
+    const uint SizeNxCoreData = 48;
+    // string() url; // Internal buffer for URL - not so in Fusion.
+
+    /// Gets the Mii image URL using the Mii data converted in this instance.
+    public string() GetImageUrl!(
+        /// Size (square) of the image.
+        /// Nintendo's API only accepts: 96, 128, 270, 512
+        ushort width,
+        /// Whether or not to get an image of the whole body ("all_body")
+        bool allBody)
+    { // throws Exception {
+        /*
+        switch (width) {
+            // allowed widths
+            case 96: case 128: case 270: case 512:
+                break;
+            default:
+                // user provided an unsupported width
+                // well. for mii studio, at least
+                throw Exception("Unsupported image width. Use: 96, 128, 270, 512");
+        }
+        */
+
+        string() dataHex = "";
+        // Obfuscate data in local "buf" for the API.
+        byte[SizeStudioUrlData] urlData;
+        ObfuscateStudioUrl(urlData, buf);
+        // Append the buffer as hex.
+        for (int i = 0; i < SizeStudioUrlData; i++) {
+            dataHex += $"{urlData[i]:x2}";
+        }
+        // Form the final URL.
+        string() url = $"{UrlBaseImagePng}{dataHex}&width={width}&type=";
+        if (allBody) {
+            url += "all_body";
+        } else {
+            url += "face";
+        }
+
+        return url;
+    }
+
+    /// Decodes the input Mii data, where the type is automatically detected.
+    /// Formats (3DS/Wii U):
+    /// * 96 byte FFLStoreData/nn::mii::Ver3StoreData (has CRC)
+    /// * 92 byte FFLiMiiDataOfficial (in database, or kazuki-4ys ".3dsmii")
+    /// * 72 byte FFLiMiiDataCore (no creator name or CRC)
+    /// Formats (Wii):
+    /// * 76 byte RFLStoreData (has CRC)
+    /// * 74 byte RFLCharData (no CRC)
+    /// Formats (Switch, Studio):
+    /// * 88 byte nn::mii::CharInfo
+    /// * 47 byte obfuscated studio URL data
+    /// * 46 byte unobfuscated raw "Studio Code"
+    public byte[] FromAnyMiiData!(
+        /// Size of the input data used to detect the type.
+        int dataSize,
+        /// Input Mii data to be converted.
+        byte[] data) throws Exception
+    {
+        switch (dataSize) {
+            // 3DS/Wii U
+            case 96: // FFLStoreData
+            case 92: // FFLiMiiDataOfficial
+            case 72: // FFLiMiiDataCore
+                return From3dsWiiuData(data);
+            // Wii
+            case 76: // RFLStoreData
+            case 74: // RFLCharData
+                return FromWiiData(data);
+            // Studio
+            case SizeStudioRawData:
+                data.CopyTo(0, buf, 0, SizeStudioRawData);
+                return buf;
+            case SizeStudioUrlData:
+                DeobfuscateStudioUrl(buf, data);
+                return buf;
+            // Switch
+            case 88: // nn::mii::CharInfo
+                return FromNxCharInfo(data);
+            case SizeNxStoreData: // nn::mii::StoreData
+            case SizeNxCoreData: // nn::mii::CoreData
+                // Not supported.
+                throw Exception("NX CoreData/StoreData are not supported.");
+            default:
+                throw Exception("Unsupported data format passed in.");
+        }
+    }
+
+    /// Verifies if the converted data in this instance is considered valid.
+    ///
+    /// Derived from nn::mii::detail::CharInfoRaw::IsValid,
+    /// but does not return the specific reason.
+    public bool IsValid() {
+      return ((((((((buf[0] < 100) && (buf[1] < 6)) && (128 > buf[2])) &&
+             ((buf[3] < 7 && (buf[4] < 100)))) &&
+            ((buf[5] < 8 && ((buf[6] < 8 && (buf[7] < 0x3c)))))) && (buf[8] < 0xd)) &&
+          ((((buf[9] < 0x13 && (buf[10] < 7)) && (buf[0xb] < 100)) &&
+           (((buf[0xc] < 0xc && (buf[0xd] < 9)) &&
+            ((buf[0xe] < 0x18 && ((buf[0xf] < 0xd && ((buf[0x10] - 3) < 0x10)))))))))) &&
+         ((((buf[0x11] < 10 && (((buf[0x12] < 0xc && (buf[0x13] < 0xc)) && (buf[0x14] < 0xc)))) &&
+           (((buf[0x15] < 0xc && (buf[0x16] < 2)) &&
+            (((buf[0x17] < 100 && ((buf[0x18] < 8 && (buf[0x19] < 0x14)))) && (buf[0x1a] < 0x15)))))
+           ) && (((((((buf[0x1b] < 100 && (buf[0x1c] < 2)) && (buf[0x1d] < 0x84)) &&
+                    ((128 > buf[0x1e] && (buf[0x1f] < 9)))) && (buf[0x20] < 2)) &&
+                  (((((buf[0x21] < 0x11 && (buf[0x22] < 0x1f)) &&
+                     ((buf[0x23] < 7 &&
+                      (((buf[0x24] < 100 && (buf[0x25] < 9)) && (buf[0x26] < 0x24)))))) &&
+                    ((buf[0x27] < 0x13 && (buf[0x28] < 9)))) && (buf[0x29] < 6)))) &&
+                 (((buf[0x2a] < 0x11 && (buf[0x2b] < 9)) && (buf[0x2c] < 0x12)))))))) && buf[0x2d] < 0x13;
+    }
+
+    /// Decodes the input 3DS/Wii U Mii data (FFLStoreData/nn::mii::Ver3StoreData).
+    public byte[] From3dsWiiuData!(byte[] data) {
+        buf[0] = data[0x42] >> 3 & 7;
+        buf[1] = data[0x42] & 7;
+        buf[2] = data[0x2f];
+        buf[3] = data[0x35] >> 5;
+        buf[4] = ((data[0x35] & 1) << 2) | data[0x34] >> 6;
+        buf[5] = data[0x36] & 0x1f;
+        buf[6] = data[0x35] >> 1 & 0xf;
+        buf[7] = data[0x34] & 0x3f;
+        buf[8] = ((data[0x37] & 1) << 3) | data[0x36] >> 5;
+        buf[9] = data[0x37] >> 1 & 0x1f;
+        buf[10] = data[0x39] >> 4 & 7;
+        buf[0xb] = data[0x38] >> 5;
+        buf[0xc] = data[0x3a] & 0x1f;
+        buf[0xd] = data[0x39] & 0xf;
+        buf[0xe] = data[0x38] & 0x1f;
+        buf[0xf] = ((data[0x3b] & 1) << 3) | data[0x3a] >> 5;
+        buf[0x10] = data[0x3b] >> 1 & 0x1f;
+        buf[0x11] = data[0x30] >> 5;
+        buf[0x12] = data[0x31] >> 4;
+        buf[0x13] = data[0x30] >> 1 & 0xf;
+        buf[0x14] = data[0x31] & 0xf;
+        buf[0x15] = data[0x19] >> 2 & 0xf;
+        buf[0x16] = data[0x18] & 1;
+        buf[0x17] = data[0x44] >> 4 & 7;
+        buf[0x18] = (data[0x45] & 7) * 2 | data[0x44] >> 7;
+        buf[0x19] = data[0x44] & 0xf;
+        buf[0x1a] = data[0x45] >> 3;
+        buf[0x1b] = data[0x33] & 7;
+        buf[0x1c] = data[0x33] >> 3 & 1;
+        buf[0x1d] = data[0x32];
+        buf[0x1e] = data[0x2e];
+        buf[0x1f] = data[0x46] >> 1 & 0xf;
+        buf[0x20] = data[0x46] & 1;
+        buf[0x21] = ((data[0x47] & 3) << 3) | data[0x46] >> 5;
+        buf[0x22] = data[0x47] >> 2 & 0x1f;
+        buf[0x23] = data[0x3f] >> 5;
+        buf[0x24] = ((data[0x3f] & 1) << 2) | data[0x3e] >> 6;
+        buf[0x25] = data[0x3f] >> 1 & 0xf;
+        buf[0x26] = data[0x3e] & 0x3f;
+        buf[0x27] = data[0x40] & 0x1f;
+        buf[0x28] = ((data[0x43] & 3) << 2) | data[0x42] >> 6;
+        buf[0x29] = data[0x40] >> 5;
+        buf[0x2a] = data[0x43] >> 2 & 0x1f;
+        buf[0x2b] = ((data[0x3d] & 1) << 3) | data[0x3c] >> 5;
+        buf[0x2c] = data[0x3c] & 0x1f;
+        buf[0x2d] = data[0x3d] >> 1 & 0x1f;
+
+        ConvFieldsVer3ToNx(buf);
+        return buf;
+    }
+
+    /// Decodes the input Wii Mii data (RFLCharData, RFLStoreData).
+    public byte[] FromWiiData!(byte[] data) {
+        // Faceline makeup/wrinkle are derived from
+        // the single "faceTex" property, from this table:
+        const byte[24] faceTexTable = { 0, 0, 0, 1, 0, 6, 0, 9, 5, 0, 2, 0, 3, 0, 7, 0, 8, 0, 0, 10, 9, 0, 11, 0 };
+
+        buf[0] = data[0x32] >> 1 & 7;
+        buf[1] = data[0x32] >> 4 & 3;
+        buf[2] = data[0x17];
+        buf[3] = 3;
+        buf[4] = data[0x2a] >> 5;
+        buf[5] = data[0x29] >> 5 | (data[0x28] & 3) << 3;
+        buf[6] = data[0x2a] >> 1 & 0xf;
+        buf[7] = data[0x28] >> 2;
+        buf[8] = data[0x2b] >> 5 | (data[0x2a] & 1) << 3;
+        buf[9] = data[0x29] & 0x1f;
+        buf[10] = 3;
+        buf[0xb] = data[0x26] >> 5;
+        buf[0xc] = data[0x25] >> 6 | (data[0x24] & 7) << 2;
+        buf[0xd] = data[0x26] >> 1 & 0xf;
+        buf[0xe] = data[0x24] >> 3;
+        buf[0xf] = data[0x27] & 0xf;
+        buf[0x10] = data[0x27] >> 4 | (data[0x26] & 1) << 4;
+        buf[0x11] = data[0x20] >> 2 & 7;
+        ushort faceTex = (data[0x21] >> 6) | (data[0x20] & 3) << 2;
+        buf[0x12] = faceTexTable[(faceTex * 2) + 1];
+        buf[0x13] = data[0x20] >> 5;
+        buf[0x14] = faceTexTable[faceTex * 2];
+        buf[0x15] = data[1] >> 1 & 0xf;
+        buf[0x16] = data[0] >> 6 & 1;
+        buf[0x17] = data[0x30] >> 1 & 7;
+        buf[0x18] = data[0x31] >> 5 | (data[0x30] & 1) << 3;
+        buf[0x19] = data[0x30] >> 4;
+        buf[0x1a] = data[0x31] & 0x1f;
+        buf[0x1b] = data[0x23] >> 6 | (data[0x22] & 1) << 2;
+        buf[0x1c] = data[0x23] >> 5 & 1;
+        buf[0x1d] = data[0x22] >> 1;
+        buf[0x1e] = data[0x16];
+        buf[0x1f] = data[0x34] >> 3 & 0xf;
+        buf[0x20] = data[0x34] >> 7;
+        buf[0x21] = data[0x35] >> 1 & 0x1f;
+        buf[0x22] = data[0x35] >> 6 | (data[0x34] & 7) << 2;
+        buf[0x23] = 3;
+        buf[0x24] = data[0x2e] >> 1 & 3;
+        buf[0x25] = data[0x2f] >> 5 | (data[0x2e] & 1) << 3;
+        buf[0x26] = data[0x2e] >> 3;
+        buf[0x27] = data[0x2f] & 0x1f;
+        buf[0x28] = data[0x33] >> 5 | (data[0x32] & 1) << 3;
+        buf[0x29] = data[0x32] >> 6;
+        buf[0x2a] = data[0x33] & 0x1f;
+        buf[0x2b] = data[0x2c] & 0xf;
+        buf[0x2c] = data[0x2c] >> 4;
+        buf[0x2d] = data[0x2d] >> 3;
+
+        ConvFieldsVer3ToNx(buf);
+        return buf;
+    }
+
+    /// Decodes the input Switch nn::mii::CharInfo format.
+    public byte[] FromNxCharInfo!(byte[] data) {
+        buf[0] = data[0x4a];
+        buf[1] = data[0x4b];
+        buf[2] = data[0x2a];
+        buf[3] = data[0x37];
+        buf[4] = data[0x35];
+        buf[5] = data[0x38];
+        buf[6] = data[0x36];
+        buf[7] = data[0x34];
+        buf[8] = data[0x39];
+        buf[9] = data[0x3a];
+        buf[10] = data[0x3e];
+        buf[0xb] = data[0x3c];
+        buf[0xc] = data[0x3f];
+        buf[0xd] = data[0x3d];
+        buf[0xe] = data[0x3b];
+        buf[0xf] = data[0x40];
+        buf[0x10] = data[0x41];
+        buf[0x11] = data[0x2e];
+        buf[0x12] = data[0x30];
+        buf[0x13] = data[0x2d];
+        buf[0x14] = data[0x2f];
+        buf[0x15] = data[0x27];
+        buf[0x16] = data[0x28];
+        buf[0x17] = data[0x50];
+        buf[0x18] = data[0x51];
+        buf[0x19] = data[0x4f];
+        buf[0x1a] = data[0x52];
+        buf[0x1b] = data[0x32];
+        buf[0x1c] = data[0x33];
+        buf[0x1d] = data[0x31];
+        buf[0x1e] = data[0x29];
+        buf[0x1f] = data[0x54];
+        buf[0x20] = data[0x53];
+        buf[0x21] = data[0x55];
+        buf[0x22] = data[0x56];
+        buf[0x23] = data[0x48];
+        buf[0x24] = data[0x46];
+        buf[0x25] = data[0x47];
+        buf[0x26] = data[0x45];
+        buf[0x27] = data[0x49];
+        buf[0x28] = data[0x4d];
+        buf[0x29] = data[0x4c];
+        buf[0x2a] = data[0x4e];
+        buf[0x2b] = data[0x43];
+        buf[0x2c] = data[0x42];
+        buf[0x2d] = data[0x44];
+        return buf;
+    }
+
+    /// Common method to convert colors and other fields from
+    /// 3DS/Wii U and Wii data to Switch/Studio equivalents.
+    static void ConvFieldsVer3ToNx(byte[]! buf) {
+        // Convert Ver3 colors to common colors.
+        if (buf[0x1b] == 0) buf[0x1b] = 8; // Map hair color 0 to 8.
+        // Beard and eyebrow color are treated like hair color.
+        if (buf[0] == 0) buf[0] = 8;
+        if (buf[0xb] == 0) buf[0xb] = 8;
+
+        buf[0x24] += 19; // Offset mouth color by 19.
+        buf[4] += 8; // Offset eye color by 8.
+
+        // Convert glass color.
+        if (buf[0x17] == 0) buf[0x17] = 8;
+        else if (buf[0x17] < 6) buf[0x17] += 13;
+
+        // Clamp build and height from Ver3 maximum of 128.
+        if (0x7f < buf[2]) buf[2] = 127;
+        if (0x7f < buf[0x1e]) buf[0x1e] = 127;
+    }
+
+    /// Obfuscates Studio data to be used in the URL.
+    static void ObfuscateStudioUrl(byte[]! dst, byte[SizeStudioRawData] src,
+        /// The random value to use for the obfuscation. Best left as 0.
+        byte seed = 0) {
+        // Obfuscation code from editor.pc.js, search ".prototype.encode".
+        // https://web.archive.org/web/20230725172634id_/https://mii-studio.akamaized.net/static/js/editor.pc.46056ea432a4ef3974af.js
+        dst[0] = seed; // Store the seed at the first byte.
+        // Loop over the source array.
+        for (uint i = 0; i < SizeStudioRawData; i++) {
+            // Take the source byte and XOR with previous destination byte.
+            byte val = src[i] ^ dst[i];
+            // Add 7 to the current value, then take modulo 256.
+            dst[i + 1] = (7 + val) % 256;
+        }
+    }
+
+    /// Deobfuscates Studio URL data to raw decodeable data.
+    static void DeobfuscateStudioUrl(byte[]! dst, byte[] src) {
+        // Derived from obfuscation method.
+        for (uint i = 0; i < SizeStudioRawData; i++) {
+    		byte val = (src[i + 1] - 7) % 256;
+    		dst[i] = val ^ src[i];
+	    }
+    }
+}
+
+/// Utility class for decoding a hexadecimal string to a buffer.
+public static class HexDecoder
+{
+    static int HexValue(int c)
+    {
+        if (c >= '0' && c <= '9') return c - '0';
+        if (c >= 'A' && c <= 'F') return c - 'A' + 10;
+        if (c >= 'a' && c <= 'f') return c - 'a' + 10;
+        return -1;
+    }
+
+    public static int Decode(string text, byte[]! buf, int bufSize)
+    {
+        int len = text.Length;
+        // Is it a multiple of two?
+        if ((len & 1) != 0) return -1;
+
+        int byteCount = len >> 1;
+        if (byteCount > bufSize) return -1;
+
+        for (int i = 0; i < byteCount; i++) {
+            int hi = HexValue(text[i << 1]);
+            int lo = HexValue(text[(i << 1) + 1]);
+            if (hi < 0 || lo < 0) return -1;
+            buf[i] = ((hi << 4) | lo) & 0xFF;
+        }
+
+        return byteCount;
+    }
+}
+
+static class Program
+{
+    public static void Main(string[] args) throws Exception
+    {
+        MiiToStudio() converter;
+        byte[127] buffer;
+
+        if (args.Length < 1)
+        {
+            Console.WriteLine($"usage: first arg = mii in hex");
+            return;
+        }
+
+        int size = HexDecoder.Decode(args[0], buffer, buffer.Length);
+
+        byte[]? data = converter.FromAnyMiiData(size, buffer);
+        if (data == null)
+        {
+            Console.WriteLine("(you are in C and) dont know the input type");
+            return;
+        }
+
+        string() url = converter.GetImageUrl(128, false);
+
+        if (!converter.IsValid()) {
+            Console.WriteLine("Data is INVALID");
+        } else {
+            Console.WriteLine(url);
+        }
+    }
+}
