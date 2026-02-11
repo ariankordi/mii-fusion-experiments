@@ -1,6 +1,5 @@
-/// Class for converting various Nintendo Mii formats to "Mii Studio" data,
-/// passed to the studio.mii.nintendo.com rendering API to get a Mii image.
-/// Converted data is stored in this class instance.
+/// Single-purpose class for converting Nintendo Mii formats to "Mii Studio data",
+/// usable with the studio.mii.nintendo.com rendering API to get a Mii image.
 ///
 /// Most methods are made from decompiled C code (mii-to-studio-conv.c).
 /// This creates code that is unreadable, yet efficient and compatible.
@@ -78,7 +77,7 @@ public class MiiToStudio {
     /// Formats (Switch, Studio):
     /// * 88 byte nn::mii::CharInfo
     /// * 47 byte obfuscated studio URL data
-    /// * 46 byte unobfuscated raw "Studio Code"
+    /// * 46 byte un-obfuscated raw "Studio Code"
     public byte[] FromAnyMiiData!(
         /// Size of the input data used to detect the type.
         int dataSize,
@@ -186,13 +185,13 @@ public class MiiToStudio {
         buf[0x2c] = data[0x3c] & 0x1f;
         buf[0x2d] = data[0x3d] >> 1 & 0x1f;
 
-        ConvFieldsVer3ToNx(buf);
+        ConvertFieldsVer3ToNx(buf);
         return buf;
     }
 
     /// Decodes the input Wii Mii data (RFLCharData, RFLStoreData).
     public byte[] FromWiiData!(byte[] data) {
-        // Faceline makeup/wrinkle are derived from
+        // Face makeup/wrinkle are derived from
         // the single "faceTex" property, from this table:
         const byte[24] faceTexTable = { 0, 0, 0, 1, 0, 6, 0, 9, 5, 0, 2, 0, 3, 0, 7, 0, 8, 0, 0, 10, 9, 0, 11, 0 };
 
@@ -244,7 +243,7 @@ public class MiiToStudio {
         buf[0x2c] = data[0x2c] >> 4;
         buf[0x2d] = data[0x2d] >> 3;
 
-        ConvFieldsVer3ToNx(buf);
+        ConvertFieldsVer3ToNx(buf);
         return buf;
     }
 
@@ -301,7 +300,7 @@ public class MiiToStudio {
 
     /// Common method to convert colors and other fields from
     /// 3DS/Wii U and Wii data to Switch/Studio equivalents.
-    static void ConvFieldsVer3ToNx(byte[]! buf) {
+    static void ConvertFieldsVer3ToNx(byte[]! buf) {
         // Convert Ver3 colors to common colors.
         if (buf[0x1b] == 0) buf[0x1b] = 8; // Map hair color 0 to 8.
         // Beard and eyebrow color are treated like hair color.
@@ -336,7 +335,7 @@ public class MiiToStudio {
         }
     }
 
-    /// Deobfuscates Studio URL data to raw decodeable data.
+    /// Deobfuscates Studio URL data to raw decodable data.
     static void DeobfuscateStudioUrl(byte[]! dst, byte[] src) {
         // Derived from obfuscation method.
         for (uint i = 0; i < SizeStudioRawData; i++) {
