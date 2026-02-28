@@ -26,44 +26,6 @@ public class Crc16Ccitt
         return CalculateFast(input, length, context);
     }
 
-
-    /// Calculates the CRC-16/CCITT checksum for the specified input data.
-    public static ushort CalculateShift(byte[] input, int length, ushort context = Context)
-    {
-        // Determine starting CRC value: if context is the default (0x0000), start with Init.
-        ushort crc = context;//(context == Context) ? Init : context;
-
-
-        // Iterate over each byte in the input array.
-        for (int i = 0; i < length; i++)
-        {
-            // XOR byte into the high byte of CRC.
-            crc ^= input[i] << 8;
-
-            // For each byte, process 8 bit shifts.
-            // This inner loop updates the CRC by shifting left and conditionally XOR’ing with the polynomial.
-            for (int bit = 0; bit < 8; bit++)
-            {
-                // Check if the highest bit (bit 15) is set.
-                if ((crc & 0x8000) != 0)
-                {
-                    // If set, shift left by 1 and XOR with the polynomial.
-                    crc = ((crc << 1) ^ Poly) & 0xFFFF;
-                }
-                else
-                {
-                    // Otherwise, simply shift left by 1.
-                    crc = (crc << 1) & 0xFFFF;
-                }
-            }
-        }
-
-        // Return the final CRC value.
-        return crc;
-    }
-
-
-
     /// Calculates the CRC-16/CCITT checksum for the specified input data.
     /// Courtesy of Luciano Barcaro: https://stackoverflow.com/a/30357446
     public static ushort CalculateFast(byte[] input, int length, ushort context = Context)
@@ -102,4 +64,41 @@ public class Crc16Ccitt
         // The LSB occupies the low-order byte.
         return (msb << 8) | lsb;
     }
+
+    /*
+    /// Calculates the CRC-16/CCITT checksum for the specified input data.
+    public static ushort CalculateShift(byte[] input, int length, ushort context = Context)
+    {
+        // Determine starting CRC value: if context is the default (0x0000), start with Init.
+        ushort crc = context;//(context == Context) ? Init : context;
+
+
+        // Iterate over each byte in the input array.
+        for (int i = 0; i < length; i++)
+        {
+            // XOR byte into the high byte of CRC.
+            crc ^= input[i] << 8;
+
+            // For each byte, process 8 bit shifts.
+            // This inner loop updates the CRC by shifting left and conditionally XOR’ing with the polynomial.
+            for (int bit = 0; bit < 8; bit++)
+            {
+                // Check if the highest bit (bit 15) is set.
+                if ((crc & 0x8000) != 0)
+                {
+                    // If set, shift left by 1 and XOR with the polynomial.
+                    crc = ((crc << 1) ^ Poly) & 0xFFFF;
+                }
+                else
+                {
+                    // Otherwise, simply shift left by 1.
+                    crc = (crc << 1) & 0xFFFF;
+                }
+            }
+        }
+
+        // Return the final CRC value.
+        return crc;
+    }
+    */
 }

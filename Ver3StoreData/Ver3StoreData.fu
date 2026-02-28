@@ -2,7 +2,10 @@ public class Ver3StoreData
 {
     public const int Length = 96;
 
-    public static void ToStoreDataBytes(byte[]# output, Ver3CharInfo info)
+    /// Casts a boolean to an integer.
+    static uint B2I(bool b) => b ? 1 : 0;
+
+    public static void ToStoreDataBytes(byte[]! output, Ver3CharInfo info)
     {
        // Clear buffer
         for (int i = 0; i < Length; i++)
@@ -10,8 +13,8 @@ public class Ver3StoreData
 
         ushort tmpU16;
         output[0] = (output[0] & ~(255 << 0)) | ((info.MiiVersion & 255) << 0);
-        output[1] = (output[1] & ~(1 << 0)) | ((info.Copyable ? 1 : 0) << 0);
-        output[1] = (output[1] & ~(1 << 1)) | ((info.NgWord ? 1 : 0) << 1);
+        output[1] = (output[1] & ~(1 << 0)) | ((B2I(info.Copyable)) << 0);
+        output[1] = (output[1] & ~(1 << 1)) | ((B2I(info.NgWord)) << 1);
         output[1] = (output[1] & ~(3 << 2)) | ((info.RegionMove & 3) << 2);
         output[1] = (output[1] & ~(3 << 4)) | ((info.FontRegion & 3) << 4);
         // reserved_0: not exposed
@@ -33,7 +36,7 @@ public class Ver3StoreData
         output[24] = tmpU16 & 0xFF;
         output[25] = (tmpU16 >> 8) & 0xFF;
         output[25] = (output[25] & ~(15 << 2)) | ((info.FavoriteColor & 15) << 2);
-        output[25] = (output[25] & ~(1 << 6)) | ((info.Favorite ? 1 : 0) << 6);
+        output[25] = (output[25] & ~(1 << 6)) | ((B2I(info.Favorite)) << 6);
         // padding_0 not exposed
 
         ushort[] name = info.Name;
@@ -45,7 +48,7 @@ public class Ver3StoreData
         output[46] = info.Height;
         output[47] = info.Build;
 
-        output[48] = (output[48] & ~(1 << 0)) | ((info.Localonly ? 1 : 0) << 0);
+        output[48] = (output[48] & ~(1 << 0)) | ((B2I(info.Localonly)) << 0);
         output[48] = (output[48] & ~(15 << 1)) | ((info.FaceType & 15) << 1);
         output[48] = (output[48] & ~(7 << 5)) | ((info.FaceColor & 7) << 5);
         output[49] = (output[49] & ~(15 << 0)) | ((info.FaceTex & 15) << 0);
@@ -58,7 +61,7 @@ public class Ver3StoreData
         output[52] = (output[52] & ~(63 << 0)) | ((info.EyeType & 63) << 0);
         tmpU16 = output[52] | (output[53] << 8);
         tmpU16 = (tmpU16 & ~(7 << 6)) | ((info.EyeColor & 7) << 6);
-        output[52] = tmpU16;
+        output[52] = (tmpU16 & 0xFF);
         output[53] = (tmpU16 >> 8);
         output[53] = (output[53] & ~(15 << 1)) | ((info.EyeScale & 15) << 1);
         output[53] = (output[53] & ~(7 << 5)) | ((info.EyeAspect & 7) << 5);
@@ -66,7 +69,7 @@ public class Ver3StoreData
         output[54] = (output[54] & ~(31 << 0)) | ((info.EyeRotate & 31) << 0);
         tmpU16 = output[54] | (output[55] << 8);
         tmpU16 = (tmpU16 & ~(15 << 5)) | ((info.EyeX & 15) << 5);
-        output[54] = tmpU16;
+        output[54] = (tmpU16 & 0xFF);
         output[55] = (tmpU16 >> 8);
         output[55] = (output[55] & ~(31 << 1)) | ((info.EyeY & 31) << 1);
         // padding_2 not exposed
@@ -143,7 +146,7 @@ public class Ver3StoreData
         output[94] = crc >> 8;
         output[95] = crc & 0xFF;
     }
-    public static void SetFromBytes(byte[] src, Ver3CharInfo# info)
+    public static void SetFromBytes(byte[] src, Ver3CharInfo! info)
     {
         info.MiiVersion = src[0];
         info.Copyable = (src[1] & 1) != 0;
