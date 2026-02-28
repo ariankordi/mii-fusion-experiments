@@ -1,10 +1,42 @@
+/*
+ * MiiToStudio.fu - Nintendo Mii data converter for the "Mii Studio" rendering API.
+ * Created by Arian Kordi (https://github.com/ariankordi)
+ *
+ * Implemented in Fusion, a language that transpiles to C, JS, Python, C#, and more.
+ * Try it in your browser (paste this file): https://fusion-lang.org/playground
+ *
+ * To build the CLI, find-replace "#if CLI" with "#if true" (or with fut: add -D CLI)
+ * Supported formats: Wii (74/76 bytes), 3DS/Wii U (92/96 bytes),
+ *                    Switch (88 byte "CharInfo"), Studio (46/47 bytes)
+ * Data is converted into a URL for: https://studio.mii.nintendo.com/miis/image.png
+ * (Also compatible with mii-unsecure.ariankordi.net)
+ *
+ * Example of how to use the library in JavaScript:
+// 0. Paste this file into https://fusion-lang.org/playground and copy "hello.js" above.
+// 1. Obtain your Mii data - can come from anywhere.
+const miiData = new Uint8Array(96); // new Uint8Array([ 0x03, 0x00, ... ]);
+// EXAMPLE: Fill a tiny snippet of Mii data (45-72 byte range).
+miiData.set(Uint8Array.fromBase64('ABw3EhB7ASFuQxwNZMcYAAgegg0AMEGzW4Jt'), 45);
+
+// 2. Convert and validate the input data.
+const converter = new MiiToStudio();
+const studioData = converter.fromAnyMiiData(miiData.length, miiData);
+if (!studioData || !converter.isValid()) // Validate the data.
+  throw new Error("Invalid Mii data or unrecognized format.");
+
+// Also see "MiiToStudio.obfuscateStudioUrl()" to encode the studioData for a URL.
+const img = document.createElement("img"); // Prepare image element.
+
+// 3. Get the image URL and use it.
+img.src = converter.getImageUrl(270, false); // Widths: 96, 270, 512, allBody: false
+// img.src = "https://studio.mii.nintendo.com/miis/image.png?data=...&width=128&type=face"
+document.body.appendChild(img); // Display the image on the page.
+ */
+
 /// Single-purpose class for converting Nintendo Mii formats to "Mii Studio data",
 /// usable with the studio.mii.nintendo.com rendering API to get a Mii image.
-///
-/// Most methods are made from decompiled C code (mii-to-studio-conv.c).
-/// This creates code that is unreadable, yet efficient and compatible.
-/// But the structures and validation are set in stone, unless there's a bug.
-public class MiiToStudio {
+public class MiiToStudio
+{
     /// Size of Wii format Mii data (RFLCharData).
     public const uint SizeWiiData = 74;
     /// Base size of 3DS/Wii U format Mii data.
@@ -25,7 +57,6 @@ public class MiiToStudio {
     // Unsupported Switch data formats.
     const uint SizeNxStoreData = 68;
     const uint SizeNxCoreData = 48;
-    // string() url; // Internal buffer for URL - not so in Fusion.
 
     /// Gets the Mii image URL using the Mii data converted in this instance.
     public string() GetImageUrl!(
@@ -35,38 +66,44 @@ public class MiiToStudio {
         /// Whether or not to get an image of the whole body ("all_body")
         bool allBody)
     { // throws Exception {
-        /*
-        switch (width) {
+        switch (width)
+        {
             // allowed widths
-            case 96: case 128: case 270: case 512:
+            case 96: case 270: case 512:
                 break;
             default:
-                // user provided an unsupported width
-                // well. for mii studio, at least
-                throw Exception("Unsupported image width. Use: 96, 128, 270, 512");
+                // Unsupported width - at least, for studio.mii.nintendo.com.
+                if ((width != 128 || allBody) && // allBody not supported with 128.
+                    UrlBaseImagePng.StartsWith("https://studio.mii.nintendo.com/"))
+                {
+                    Console.WriteLine($"MiiToStudio.GetImageUrl(): Unsupported width {width}, resetting to 512.");
+                    width = 512;
+                }
+                break;
+                // throw Exception("Unsupported image width. Use: 96, 128, 270, 512");
         }
-        */
 
         string() dataHex = "";
         // Obfuscate data in local "buf" for the API.
         byte[SizeStudioUrlData] urlData;
         ObfuscateStudioUrl(urlData, buf);
         // Append the buffer as hex.
-        for (int i = 0; i < SizeStudioUrlData; i++) {
+        for (uint i = 0; i < SizeStudioUrlData; i++)
             dataHex += $"{urlData[i]:x2}";
-        }
+
         // Form the final URL.
+        // Official order from NPF SDK: expression, bgColor,
+        // clothesColor, camera(X/Y/Z)Rotate, character(X/Y/Z)Rotate,
+        // lightDirectionMode (unused), light(X/Y/Z)Direction,
+        // type, width (these are last.)
         string() url = $"{UrlBaseImagePng}{dataHex}&width={width}&type=";
-        if (allBody) {
-            url += "all_body";
-        } else {
-            url += "face";
-        }
+        url += allBody ? "all_body" : "face";
 
         return url;
     }
 
     /// Decodes the input Mii data, where the type is automatically detected.
+    /// Returns null if the format is not supported.
     /// Formats (3DS/Wii U):
     /// * 96 byte FFLStoreData/nn::mii::Ver3StoreData (has CRC)
     /// * 92 byte FFLiMiiDataOfficial (in database, or kazuki-4ys ".3dsmii")
@@ -78,13 +115,14 @@ public class MiiToStudio {
     /// * 88 byte nn::mii::CharInfo
     /// * 47 byte obfuscated studio URL data
     /// * 46 byte un-obfuscated raw "Studio Code"
-    public byte[] FromAnyMiiData!(
+    public byte[]? FromAnyMiiData!(
         /// Size of the input data used to detect the type.
-        int dataSize,
+        uint dataSize,
         /// Input Mii data to be converted.
-        byte[] data) throws Exception
+        byte[] data)
     {
-        switch (dataSize) {
+        switch (dataSize)
+        {
             // 3DS/Wii U
             case 96: // FFLStoreData
             case 92: // FFLiMiiDataOfficial
@@ -106,18 +144,24 @@ public class MiiToStudio {
                 return FromNxCharInfo(data);
             case SizeNxStoreData: // nn::mii::StoreData
             case SizeNxCoreData: // nn::mii::CoreData
-                // Not supported.
-                throw Exception("NX CoreData/StoreData are not supported.");
+                // NX CoreData/StoreData are not supported.
+                return null;
             default:
-                throw Exception("Unsupported data format passed in.");
+                // Unsupported data format passed in.
+                return null;
         }
     }
+
+    // The methods below are created from decompiled C code (mii-to-studio-conv.c).
+    // This creates code that is unreadable, yet efficient and compatible.
+    // But the structures and validation are set in stone, unless there's a bug.
 
     /// Verifies if the converted data in this instance is considered valid.
     ///
     /// Derived from nn::mii::detail::CharInfoRaw::IsValid,
     /// but does not return the specific reason.
-    public bool IsValid() {
+    public bool IsValid()
+    {
       return ((((((((buf[0] < 100) && (buf[1] < 6)) && (128 > buf[2])) &&
              ((buf[3] < 7 && (buf[4] < 100)))) &&
             ((buf[5] < 8 && ((buf[6] < 8 && (buf[7] < 0x3c)))))) && (buf[8] < 0xd)) &&
@@ -137,7 +181,8 @@ public class MiiToStudio {
     }
 
     /// Decodes the input 3DS/Wii U Mii data (FFLStoreData/nn::mii::Ver3StoreData).
-    public byte[] From3dsWiiuData!(byte[] data) {
+    public byte[] From3dsWiiuData!(byte[] data)
+    {
         buf[0] = data[0x42] >> 3 & 7;
         buf[1] = data[0x42] & 7;
         buf[2] = data[0x2f];
@@ -190,7 +235,8 @@ public class MiiToStudio {
     }
 
     /// Decodes the input Wii Mii data (RFLCharData, RFLStoreData).
-    public byte[] FromWiiData!(byte[] data) {
+    public byte[] FromWiiData!(byte[] data)
+    {
         // Face makeup/wrinkle are derived from
         // the single "faceTex" property, from this table:
         const byte[24] faceTexTable = { 0, 0, 0, 1, 0, 6, 0, 9, 5, 0, 2, 0, 3, 0, 7, 0, 8, 0, 0, 10, 9, 0, 11, 0 };
@@ -248,7 +294,8 @@ public class MiiToStudio {
     }
 
     /// Decodes the input Switch nn::mii::CharInfo format.
-    public byte[] FromNxCharInfo!(byte[] data) {
+    public byte[] FromNxCharInfo!(byte[] data)
+    {
         buf[0] = data[0x4a];
         buf[1] = data[0x4b];
         buf[2] = data[0x2a];
@@ -300,7 +347,8 @@ public class MiiToStudio {
 
     /// Common method to convert colors and other fields from
     /// 3DS/Wii U and Wii data to Switch/Studio equivalents.
-    static void ConvertFieldsVer3ToNx(byte[]! buf) {
+    static void ConvertFieldsVer3ToNx(byte[]! buf)
+    {
         // Convert Ver3 colors to common colors.
         if (buf[0x1b] == 0) buf[0x1b] = 8; // Map hair color 0 to 8.
         // Beard and eyebrow color are treated like hair color.
@@ -320,9 +368,10 @@ public class MiiToStudio {
     }
 
     /// Obfuscates Studio data to be used in the URL.
-    static void ObfuscateStudioUrl(byte[]! dst, byte[SizeStudioRawData] src,
+    public static void ObfuscateStudioUrl(byte[]! dst, byte[SizeStudioRawData] src,
         /// The random value to use for the obfuscation. Best left as 0.
-        byte seed = 0) {
+        byte seed = 0)
+    {
         // Obfuscation code from editor.pc.js, search ".prototype.encode".
         // https://web.archive.org/web/20230725172634id_/https://mii-studio.akamaized.net/static/js/editor.pc.46056ea432a4ef3974af.js
         dst[0] = seed; // Store the seed at the first byte.
@@ -336,7 +385,8 @@ public class MiiToStudio {
     }
 
     /// Deobfuscates Studio URL data to raw decodable data.
-    static void DeobfuscateStudioUrl(byte[]! dst, byte[] src) {
+    static void DeobfuscateStudioUrl(byte[]! dst, byte[] src)
+    {
         // Derived from obfuscation method.
         for (uint i = 0; i < SizeStudioRawData; i++) {
     		byte val = (src[i + 1] - 7) % 256;
@@ -345,30 +395,40 @@ public class MiiToStudio {
     }
 }
 
+#if CLI
 /// Utility class for decoding a hexadecimal string to a buffer.
 public static class HexDecoder
 {
-    static int HexValue(int c)
+    /// Gets the character code corresponding to the hexadecimal number.
+    static short HexValue(byte c)
     {
         if (c >= '0' && c <= '9') return c - '0';
         if (c >= 'A' && c <= 'F') return c - 'A' + 10;
         if (c >= 'a' && c <= 'f') return c - 'a' + 10;
+        // Out-of-range character.
         return -1;
     }
 
-    public static int Decode(string text, byte[]! buf, int bufSize)
+    /// Decodes a hexadecimal string into a pre-allocated buffer.
+    public static int Decode(string text, byte[]! buf, uint bufSize)
     {
-        int len = text.Length;
+        uint len = text.Length;
         // Is it a multiple of two?
         if ((len & 1) != 0) return -1;
 
         int byteCount = len >> 1;
-        if (byteCount > bufSize) return -1;
+        // Does this exceed the buffer size?
+        if (byteCount > bufSize)
+            return -1;
 
-        for (int i = 0; i < byteCount; i++) {
-            int hi = HexValue(text[i << 1]);
-            int lo = HexValue(text[(i << 1) + 1]);
-            if (hi < 0 || lo < 0) return -1;
+        for (uint i = 0; i < byteCount; i++)
+        {
+            short hi = HexValue(text[i << 1]);
+            short lo = HexValue(text[(i << 1) + 1]);
+            if (hi < 0 || lo < 0)
+                // Out-of-range character.
+                return -1;
+
             buf[i] = ((hi << 4) | lo) & 0xFF;
         }
 
@@ -376,34 +436,46 @@ public static class HexDecoder
     }
 }
 
-static class Program
+public static class Program
 {
-    public static void Main(string[] args) throws Exception
+    public static int Main(string[] args)
     {
         MiiToStudio() converter;
         byte[127] buffer;
 
         if (args.Length < 1)
         {
-            Console.WriteLine($"usage: first arg = mii in hex");
-            return;
+            Console.Error.WriteLine("Usage: ./MiiToStudio <Mii data hex>");
+            Console.Error.WriteLine("  Supported sizes (auto-detected): 46, 47, 74, 76, 88, 92, 96 bytes");
+            Console.Error.WriteLine("  Linux/macOS: ./MiiToStudio \"$(xxd -p -c0 MyMii.ffsd)\"");
+            Console.Error.WriteLine("  PowerShell: .\\MiiToStudio (([System.IO.File]::ReadAllBytes(\"MyMii.ffsd\") | ForEach-Object { $_.ToString(\"x2\") }) -join \"\")");
+            return 1;
         }
 
-        int size = HexDecoder.Decode(args[0], buffer, buffer.Length);
+        uint size = HexDecoder.Decode(args[0], buffer, buffer.Length);
+        if (size < 0)
+        {
+            Console.Error.WriteLine("Invalid hexadecimal input.");
+            return 1;
+        }
 
         byte[]? data = converter.FromAnyMiiData(size, buffer);
         if (data == null)
         {
-            Console.WriteLine("(you are in C and) dont know the input type");
-            return;
+            Console.Error.WriteLine("MiiToStudio.FromAnyMiiData() could not determine input type.");
+            return 1;
         }
 
         string() url = converter.GetImageUrl(128, false);
 
         if (!converter.IsValid()) {
-            Console.WriteLine("Data is INVALID");
-        } else {
-            Console.WriteLine(url);
+            Console.Error.WriteLine("Mii data is invalid (MiiToStudio.IsValid() == false).");
+            return 1;
         }
+
+        Console.WriteLine(url);
+
+        return 0;
     }
 }
+#endif // CLI
